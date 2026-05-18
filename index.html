@@ -1,0 +1,2559 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🔔 Segue a Cor, Toca o Sino v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#1a0a2e;
+  --text:#fff;
+  --muted:rgba(255,255,255,0.6);
+  --accent:#ffd700;
+  --green:#4ade80;
+  --red:#f87171;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Prevent double-tap zoom on interactive elements */
+button, select, .bell-cell{
+  touch-action:manipulation;
+}
+
+.starfield{
+  position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+}
+.star-dot{
+  position:absolute; border-radius:50%; background:#fff;
+  animation:twinkle var(--d,3s) ease-in-out infinite;
+  animation-delay:var(--delay,0s); opacity:0;
+}
+@keyframes twinkle{ 0%,100%{opacity:.08} 50%{opacity:.9} }
+
+.wrap{
+  position:relative; z-index:1;
+  max-width:1100px; margin:auto; padding:8px 12px;
+}
+
+.header{ text-align:center; margin-bottom:6px; }
+.header h1{
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(18px,3.5vw,32px);
+  background:linear-gradient(135deg,#ffd700,#ff9f00,#ff5f7e,#a855f7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.header p{ color:var(--muted); font-size:12px; margin-top:2px; }
+
+/* ═══ SCOREBOARD ═══ */
+.scoreboard{
+  display:flex; justify-content:center; gap:8px; flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.score-card{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:10px; padding:4px 12px;
+  text-align:center; backdrop-filter:blur(10px);
+  min-width:64px;
+  transition: transform .15s, background .15s;
+}
+.score-card.pulse{
+  animation: scorePulse .35s ease-out;
+}
+@keyframes scorePulse{
+  0%{transform:scale(1)} 40%{transform:scale(1.18)} 100%{transform:scale(1)}
+}
+.score-card .val{
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(16px,2.5vw,22px);
+  line-height:1;
+}
+.score-card .lbl{
+  font-size:9px; font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.8px; margin-top:1px;
+}
+#scoreVal{ color:#ffd700; }
+#streakVal{ color:#4ade80; }
+#maxStreakVal{ color:#a78bfa; }
+#accuracyVal{ color:#38bdf8; }
+
+/* ═══ PROGRESS BAR ═══ */
+.progress-wrap{
+  background:rgba(255,255,255,0.07);
+  border-radius:8px; height:5px; margin-bottom:6px;
+  border:1px solid rgba(255,255,255,0.1);
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,#ffd700,#ff9f00,#a855f7);
+  border-radius:8px;
+  transition:width .3s ease;
+  width:0%;
+}
+
+/* ═══ MASCOTE VanBerto's ═══ */
+.vb-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4px auto 8px;
+}
+.vb-robot {
+  width: 90px;
+  animation: vbFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px #7dd3fc);
+  transform-origin: 50% 80%;
+}
+.vb-signature {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: right;
+  background: rgba(10,4,30,0.7);
+  border: 1px solid rgba(56,189,248,0.3);
+  border-radius: 12px;
+  padding: 8px 14px;
+  backdrop-filter: blur(8px);
+  background: linear-gradient(135deg, #38bdf8, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(56,189,248,0.5));
+  pointer-events: none;
+}
+.vb-eye-left {
+  transform-origin: 33px 23px;
+  animation: vbWink 4.2s ease-in-out infinite;
+}
+#vb-arm {
+  transform-origin: 65px 44px;
+  animation: waveVB 1.8s ease-in-out infinite;
+}
+/* estados do mascote */
+.mascote.dancing {
+  animation: vbDance 0.55s ease-in-out infinite;
+}
+.mascote.dancing #vb-arm {
+  animation: waveVB 0.55s ease-in-out infinite;
+}
+.mascote.happy {
+  animation: vbHappy 0.28s ease-in-out 3;
+}
+.mascote.sad {
+  animation: vbSad 0.22s ease-in-out 3;
+}
+@keyframes vbFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+@keyframes waveVB {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-20deg); }
+  75%  { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes vbWink {
+  0%,88%,100% { transform: scaleY(1); }
+  90%         { transform: scaleY(0.07); }
+  92%         { transform: scaleY(1); }
+}
+@keyframes vbDance {
+  0%   { transform: rotate(0deg) translateY(0); }
+  25%  { transform: rotate(-7deg) translateY(-4px); }
+  50%  { transform: rotate(0deg) translateY(0); }
+  75%  { transform: rotate(7deg) translateY(-4px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+@keyframes vbHappy {
+  0%   { transform: scale(1) translateY(0); }
+  50%  { transform: scale(1.13) translateY(-7px); }
+  100% { transform: scale(1) translateY(0); }
+}
+@keyframes vbSad {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-5px); }
+  75%  { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+.controls{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:14px; padding:7px 10px;
+  display:flex; flex-wrap:wrap; gap:7px; align-items:flex-end;
+  margin-bottom:6px; backdrop-filter:blur(10px);
+}
+.ctrl-group{ display:flex; flex-direction:column; gap:2px; flex:1 1 120px; min-width:100px; }
+.ctrl-group label{
+  font-size:9px; font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.8px;
+}
+select{
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  color:#fff; border-radius:8px;
+  padding:5px 24px 5px 8px; font-size:12px;
+  font-family:'Nunito',sans-serif; cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 7px center;
+}
+select option{ background:#1a0a2e; }
+select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; font-weight:800; letter-spacing:.5px; }
+.btn-group{ display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:flex-end; }
+.btn{
+  border:none; border-radius:10px; cursor:pointer;
+  font-family:'Fredoka One',sans-serif;
+  font-size:14px; padding:7px 14px;
+  transition:transform .1s, box-shadow .1s; letter-spacing:.5px;
+}
+.btn:active{ transform:scale(.95); }
+.btn:disabled{ opacity:.4; cursor:not-allowed; }
+.btn-play{ background:linear-gradient(135deg,#ffd700,#ff9f00); color:#1a0a2e; box-shadow:0 4px 18px rgba(255,200,0,0.4); }
+.btn-pause{ background:rgba(255,255,255,0.13); border:1px solid rgba(255,255,255,0.25); color:#fff; }
+.btn-pause.active{ background:rgba(255,215,0,0.18); border-color:rgba(255,215,0,0.5); color:#ffd700; }
+.btn-stop{ background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; }
+.note-count{ font-size:9px; color:var(--muted); text-align:center; margin-top:1px; }
+
+/* ═══ MODE TOGGLE ═══ */
+.mode-bar{
+  display:flex; gap:8px; align-items:center; justify-content:center;
+  margin-bottom:8px;
+}
+.mode-label{
+  font-size:12px; color:var(--muted); font-weight:700;
+  text-transform:uppercase; letter-spacing:.8px;
+}
+
+/* ═══ FEEDBACK TOAST ═══ */
+.feedback-toast{
+  position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  font-family:'Fredoka One',sans-serif; font-size:22px;
+  padding:10px 28px; border-radius:50px;
+  pointer-events:none; z-index:9999;
+  opacity:0; transition:opacity .15s;
+  white-space:nowrap;
+}
+.feedback-toast.show{ opacity:1; }
+.feedback-toast.good{ background:rgba(74,222,128,0.92); color:#052e16; box-shadow:0 6px 24px rgba(74,222,128,0.5); }
+.feedback-toast.bad{ background:rgba(248,113,113,0.92); color:#450a0a; box-shadow:0 6px 24px rgba(248,113,113,0.5); }
+
+/* ═══════════ GAME AREA ═══════════ */
+.game-area{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  border-radius:22px;
+  overflow:hidden;
+  border:2px solid rgba(255,255,255,0.12);
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  position:relative;
+}
+
+.sky-bg{
+  position:absolute; top:0; left:0; right:0;
+  height:clamp(160px,50vh,600px);
+  z-index:0; pointer-events:none;
+  background:linear-gradient(180deg,
+    #050112 0%,#0a0228 15%,#10063d 30%,
+    #180f5a 48%,#22196e 62%,#2e2e80 75%,
+    #4050a0 87%,#6080c0 95%,#90b0d8 100%);
+}
+
+.lane-col{
+  display:flex; flex-direction:column;
+  position:relative;
+  border-right:1px solid rgba(255,255,255,0.07);
+}
+.lane-col:last-child{ border-right:none; }
+
+.drop-zone{
+  position:relative;
+  height:clamp(160px,38vh,520px);
+  overflow:hidden;
+  z-index:1;
+}
+
+.hitline{
+  position:absolute; left:0; right:0; bottom:0;
+  height:3px;
+  background:rgba(255,255,255,0.6);
+  box-shadow:0 0 12px rgba(255,255,255,0.9), 0 0 28px rgba(200,220,255,0.5);
+  z-index:20; pointer-events:none;
+}
+/* hitline flash on hit */
+.hitline.flash-good{
+  background:var(--green);
+  box-shadow:0 0 20px var(--green), 0 0 40px rgba(74,222,128,0.6);
+  animation:flashLine .3s ease-out;
+}
+.hitline.flash-bad{
+  background:var(--red);
+  box-shadow:0 0 20px var(--red);
+  animation:flashLine .3s ease-out;
+}
+@keyframes flashLine{
+  0%{opacity:1} 100%{opacity:.6; height:3px;}
+}
+
+.noteBlock{
+  position:absolute;
+  left:6%; width:88%;
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(12px,1.8vw,20px);
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,0.5);
+  box-shadow:0 5px 16px rgba(0,0,0,0.4),
+             inset 0 2px 0 rgba(255,255,255,0.35),
+             inset 0 -3px 0 rgba(0,0,0,0.25);
+  z-index:10; pointer-events:none;
+  overflow:hidden;
+}
+.noteBlock::before{
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:38%;
+  background:rgba(255,255,255,0.18);
+  border-radius:10px 10px 0 0;
+}
+
+/* note hit flash */
+.noteBlock.hit-good{
+  animation:noteHitGood .25s ease-out forwards;
+}
+.noteBlock.hit-bad{
+  animation:noteHitBad .25s ease-out forwards;
+}
+@keyframes noteHitGood{
+  0%{opacity:1;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.08);filter:brightness(1.6)}
+  100%{opacity:0;transform:scale(0.85)}
+}
+@keyframes noteHitBad{
+  0%{opacity:1;filter:hue-rotate(0deg)}
+  50%{filter:hue-rotate(120deg) brightness(.7)}
+  100%{opacity:0}
+}
+
+/* particles */
+.particle{
+  position:fixed; pointer-events:none; z-index:9000;
+  border-radius:50%; animation:particleFly var(--dur,.8s) ease-out forwards;
+}
+@keyframes particleFly{
+  0%{opacity:1;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(var(--tx,0),var(--ty,-80px)) scale(0)}
+}
+
+.flake{
+  position:absolute; top:-12px; pointer-events:none;
+  animation:snowfall linear infinite; z-index:5;
+}
+@keyframes snowfall{
+  0%{transform:translateY(-20px) rotate(0deg); opacity:.85}
+  100%{transform:translateY(560px) rotate(360deg); opacity:0}
+}
+
+.snow-overlay{ display:none; }
+
+.bell-cell{
+  padding:4px 3px 8px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-end;
+  background:rgba(8,4,22,0.92);
+  border-top:3px solid var(--bc, rgba(255,255,255,0.1));
+  cursor:pointer; user-select:none;
+  transition:background .1s, border-color .1s;
+  position:relative; overflow:hidden;
+  z-index:2;
+  min-height:96px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.bell-cell:hover{ background:rgba(255,255,255,0.09); }
+.bell-cell.hit{ background:rgba(255,255,255,0.16); }
+.bell-cell.hit .bell-svg{
+  filter:brightness(1.5) drop-shadow(0 0 14px var(--bc,#fff));
+  transform:scale(0.88) translateY(3px);
+}
+.bell-cell.hit-good-cell{ background:rgba(74,222,128,0.22); }
+.bell-cell.hit-bad-cell{ background:rgba(248,113,113,0.22); }
+
+.bell-svg{
+  width:85%; height:auto;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+  transition:filter .15s, transform .12s;
+  flex-shrink:0;
+}
+
+/* Nome da nota — destaque colorido com fundo */
+.bell-name{
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(14px,1.8vw,22px);
+  color:#fff;
+  background: var(--bc,#555);
+  padding: 3px 10px 4px;
+  border-radius: 9px;
+  margin-top:5px;
+  line-height:1.2;
+  text-shadow:0 1px 4px rgba(0,0,0,0.6);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.15);
+  white-space:nowrap;
+  letter-spacing:1px;
+}
+
+.bell-key-hint{
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(8px,.9vw,11px);
+  font-weight:700;
+  color:rgba(255,255,255,0.5);
+  line-height:1;
+  margin-top:2px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:4px;
+  padding:1px 4px;
+}
+
+@keyframes ripple{
+  0%{opacity:.7;transform:translate(-50%,-50%) scale(.3)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(3)}
+}
+.ripple{
+  position:absolute; border-radius:50%;
+  width:70px; height:70px;
+  border:3px solid var(--bc,#fff);
+  pointer-events:none;
+  animation:ripple .55s ease-out forwards;
+  top:50%; left:50%;
+}
+
+/* ═══ RESULTADO FINAL ═══ */
+.result-overlay{
+  position:fixed; inset:0; z-index:8000;
+  background:rgba(10,2,30,0.88);
+  backdrop-filter:blur(12px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity .4s;
+}
+.result-overlay.show{ opacity:1; pointer-events:all; }
+.result-box{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:28px; padding:36px 48px;
+  text-align:center; max-width:420px; width:90%;
+  transform:scale(.85); transition:transform .4s;
+}
+.result-overlay.show .result-box{ transform:scale(1); }
+.result-box h2{
+  font-family:'Fredoka One',sans-serif;
+  font-size:36px;
+  background:linear-gradient(135deg,#ffd700,#ff9f00,#ff5f7e);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:12px;
+}
+.result-box .big-score{
+  font-family:'Fredoka One',sans-serif;
+  font-size:72px; color:#ffd700;
+  line-height:1; margin:8px 0;
+  text-shadow:0 0 32px rgba(255,215,0,0.6);
+}
+.result-box .stars{ font-size:42px; letter-spacing:4px; margin:8px 0; }
+.result-stats{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; margin:16px 0;
+}
+.result-stat{
+  background:rgba(255,255,255,0.07);
+  border-radius:12px; padding:10px;
+}
+.result-stat .rv{ font-family:'Fredoka One',sans-serif; font-size:22px; }
+.result-stat .rl{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+.btn-play-again{
+  background:linear-gradient(135deg,#ffd700,#ff9f00);
+  color:#1a0a2e; border:none; border-radius:14px;
+  font-family:'Fredoka One',sans-serif; font-size:20px;
+  padding:12px 36px; cursor:pointer; margin-top:8px;
+  transition:transform .1s, box-shadow .1s;
+  box-shadow:0 6px 24px rgba(255,200,0,0.4);
+}
+.btn-play-again:active{ transform:scale(.96); }
+
+.hint{
+  text-align:center; margin-top:8px;
+  color:var(--muted); font-size:12px;
+}
+.hint kbd{
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.28);
+  border-radius:5px; padding:1px 5px;
+  font-family:'Nunito',sans-serif; font-size:11px;
+}
+
+/* ═══ COUNTDOWN OVERLAY ═══ */
+.countdown-overlay{
+  position:fixed; inset:0; z-index:9800;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s;
+}
+.countdown-overlay.show{ opacity:1; pointer-events:all; }
+.countdown-circle{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:clamp(140px,30vw,220px); height:clamp(140px,30vw,220px);
+  margin-top:-30vh;
+  border-radius:50%;
+  background:rgba(10,2,30,0.85);
+  border:4px solid rgba(255,215,0,0.6);
+  box-shadow:0 0 60px rgba(255,215,0,0.35), 0 0 120px rgba(168,85,247,0.25);
+  backdrop-filter:blur(16px);
+  animation:cdPulse .9s ease-in-out infinite;
+}
+@keyframes cdPulse{
+  0%,100%{box-shadow:0 0 40px rgba(255,215,0,0.35), 0 0 80px rgba(168,85,247,0.2)}
+  50%{box-shadow:0 0 80px rgba(255,215,0,0.6), 0 0 160px rgba(168,85,247,0.4)}
+}
+.countdown-num{
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(56px,12vw,96px);
+  line-height:1;
+  background:linear-gradient(135deg,#ffd700,#ff9f00);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  animation:cdNum .85s ease-out;
+}
+@keyframes cdNum{
+  0%{transform:scale(1.5);opacity:0}
+  30%{opacity:1;transform:scale(1.05)}
+  100%{transform:scale(1)}
+}
+.countdown-label{
+  font-family:'Nunito',sans-serif; font-weight:800;
+  font-size:clamp(11px,2.5vw,16px);
+  color:rgba(255,255,255,0.65); letter-spacing:2px;
+  text-transform:uppercase; margin-top:4px;
+}
+.countdown-beat{
+  display:flex; gap:6px; margin-top:10px;
+}
+.cd-dot{
+  width:10px; height:10px; border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  transition:background .1s;
+}
+.cd-dot.active{ background:#ffd700; box-shadow:0 0 8px #ffd700; }
+
+/* ═══ NEXT LANE HIGHLIGHT ═══ */
+.lane-col.next-active .drop-zone{
+  background:rgba(255,255,255,0.04);
+}
+.lane-col.next-active .bell-cell{
+  background:rgba(255,255,255,0.14) !important;
+  border-top-width:4px !important;
+  animation:nextLanePulse 0.7s ease-in-out infinite;
+}
+.lane-col.next-active .bell-svg{
+  filter:brightness(1.4) drop-shadow(0 0 10px var(--bc,#fff)) !important;
+  transform:scale(1.06) translateY(-2px) !important;
+}
+@keyframes nextLanePulse{
+  0%,100%{background:rgba(255,255,255,0.11) !important}
+  50%{background:rgba(255,255,255,0.22) !important}
+}
+.lane-col.next-active .hitline{
+  height:5px !important;
+  animation:hitlineGlow 0.7s ease-in-out infinite;
+}
+@keyframes hitlineGlow{
+  0%,100%{box-shadow:0 0 12px rgba(255,255,255,0.9), 0 0 28px rgba(200,220,255,0.5)}
+  50%{box-shadow:0 0 24px rgba(255,255,255,1), 0 0 50px rgba(200,220,255,0.9)}
+}
+
+/* interactive mode warning zone */
+.warn-zone{
+  position:absolute; left:0; right:0;
+  bottom:40px; height:80px;
+  background:linear-gradient(0deg, rgba(255,80,80,0.13) 0%, transparent 100%);
+  pointer-events:none; z-index:15;
+}
+
+/* ═══ TABLET (≤900px) ═══ */
+@media(max-width:900px){
+  .wrap{ padding:6px 8px; }
+  .drop-zone{ height:clamp(150px,35vw,280px); }
+  .bell-cell{ min-height:clamp(70px,16vw,100px); }
+  .bell-name{ font-size:clamp(11px,2vw,16px); }
+  .controls{ gap:6px; }
+  .ctrl-group{ flex:1 1 140px; }
+}
+
+/* ═══ MOBILE (≤700px) ═══ */
+@media(max-width:700px){
+  .wrap{ padding:4px 6px; }
+  .drop-zone{ height:clamp(120px,34vw,200px); }
+  .noteBlock{ font-size:clamp(8px,2.5vw,12px); border-radius:7px; }
+  .snow-overlay{ height:50px; }
+
+  /* Result overlay */
+  .result-box{ padding:20px 16px; }
+  .result-box h2{ font-size:26px; }
+  .result-box .big-score{ font-size:48px; }
+  .result-box .stars{ font-size:32px; }
+  .result-stat .rv{ font-size:18px; }
+  .btn-play-again{ font-size:17px; padding:11px 28px; }
+
+  /* Bells */
+  .bell-name{ font-size:clamp(9px,2.8vw,14px); padding:2px 4px; border-radius:7px; }
+  .bell-key-hint{ display:none; }
+  .bell-cell{ min-height:clamp(60px,17vw,88px); padding:4px 2px 6px; }
+
+  /* Mascot */
+  .vb-robot{ width:58px; }
+  .vb-wrapper{ margin:2px auto 5px; }
+
+  /* Scoreboard */
+  .scoreboard{ gap:4px; flex-wrap:wrap; }
+  .score-card{ padding:3px 8px; min-width:54px; flex:1 1 54px; }
+  .score-card .val{ font-size:clamp(14px,3.5vw,20px); }
+  .score-card .lbl{ font-size:8px; }
+
+  /* Controls — stack into 2×2 grid on mobile */
+  .controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    padding:6px 8px;
+    align-items:end;
+  }
+  .ctrl-group{ flex:unset; min-width:unset; }
+  .ctrl-group label{ font-size:9px; }
+  select{ font-size:12px; padding:6px 24px 6px 8px; min-height:38px; }
+  .btn-group{
+    grid-column:1/-1;
+    margin-left:0;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:nowrap;
+  }
+  .btn{
+    font-size:14px;
+    padding:9px 16px;
+    flex:1 1 0;
+    min-height:42px;
+    text-align:center;
+  }
+
+  /* Header */
+  .header h1{ font-size:clamp(15px,4.5vw,22px); }
+  .header p{ font-size:11px; }
+
+  /* Next note pips */
+  .next-note-pip{ width:26px; height:26px; font-size:9px; }
+  .next-note-bar{ padding:5px 8px; gap:4px; }
+  .next-note-bar .nnb-label{ font-size:9px; }
+
+  /* Hint — hide keyboard hints on touch devices */
+  .hint{ display:none; }
+
+  /* Signature — smaller and less intrusive */
+  .vb-signature{ font-size:11px; padding:5px 10px; bottom:8px; right:8px; }
+
+  /* Repeat panel */
+  .repeat-pip{ width:30px; height:30px; font-size:11px; }
+  .repeat-round{ font-size:10px; }
+  .repeat-status{ font-size:12px; }
+
+  /* Challenge bar */
+  .challenge-bar{ font-size:11px; padding:4px 10px; }
+  .challenge-lvl{ font-size:17px; }
+}
+
+/* ═══ SMALL MOBILE (≤480px) ═══ */
+@media(max-width:480px){
+  .wrap{ padding:3px 4px; }
+  .drop-zone{ height:clamp(100px,30vw,160px); }
+  .bell-cell{ min-height:clamp(52px,16vw,72px); padding:3px 1px 5px; }
+  .bell-name{
+    font-size:clamp(7px,2.4vw,11px);
+    padding:1px 3px;
+    border-radius:5px;
+    letter-spacing:0;
+  }
+  .bell-svg{ width:90%; }
+
+  /* Controls — single column on very small screens */
+  .controls{
+    grid-template-columns:1fr;
+    gap:5px;
+    padding:5px 6px;
+  }
+  .ctrl-group{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    align-items:center;
+    gap:6px;
+  }
+  .ctrl-group label{ white-space:nowrap; margin:0; }
+  .btn-group{
+    grid-column:1/-1;
+    display:flex;
+    gap:6px;
+    justify-content:stretch;
+  }
+  .btn{ font-size:13px; padding:8px 10px; min-height:40px; }
+
+  /* Scoreboard — 2×2 */
+  .scoreboard{ gap:4px; }
+  .score-card{ min-width:0; padding:3px 6px; }
+  .score-card .val{ font-size:clamp(13px,3.8vw,18px); }
+
+  /* Result */
+  .result-stats{ grid-template-columns:1fr 1fr; gap:7px; }
+  .result-stat{ padding:8px; }
+  .result-stat .rv{ font-size:16px; }
+  .result-box h2{ font-size:22px; }
+  .result-box .big-score{ font-size:40px; }
+  .result-box .stars{ font-size:28px; }
+
+  /* Pips */
+  .next-note-pip{ width:22px; height:22px; font-size:8px; }
+}
+
+/* ═══ LANDSCAPE MOBILE ═══ */
+@media(max-height:500px) and (orientation:landscape){
+  .drop-zone{ height:clamp(80px,24vh,150px); }
+  .vb-wrapper{ display:none; }
+  .header{ margin-bottom:2px; }
+  .header p{ display:none; }
+  .scoreboard{ margin-bottom:3px; }
+  .progress-wrap{ margin-bottom:3px; }
+  .controls{ padding:3px 8px; gap:4px; }
+  .bell-cell{ min-height:clamp(44px,12vh,65px); }
+  .bell-name{ font-size:clamp(7px,1.8vw,12px); }
+  /* Controls side by side in landscape */
+  .controls{ grid-template-columns:repeat(3,1fr); }
+  .btn-group{ grid-column:unset; flex:unset; }
+}
+
+/* ═══ LARGE TABLET / DESKTOP ═══ */
+@media(min-width:1024px){
+  .drop-zone{ height:clamp(340px,40vh,520px); }
+  .bell-cell{ min-height:110px; }
+  .bell-name{ font-size:clamp(16px,1.6vw,22px); }
+}
+
+@media(min-width:1400px){
+  .drop-zone{ height:clamp(400px,45vh,600px); }
+}
+
+.hint{
+  text-align:center; margin-top:5px;
+  color:var(--muted); font-size:11px;
+  padding:0 4px;
+}
+.hint kbd{
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.28);
+  border-radius:4px; padding:1px 4px;
+  font-family:'Nunito',sans-serif; font-size:10px;
+}
+.touch-hint{ display:none; font-size:12px; margin-top:6px; }
+body.is-touch .keyboard-hint{ display:none; }
+body.is-touch .touch-hint{ display:block; }
+
+/* ═══ NEXT NOTE DISPLAY ═══ */
+.next-note-bar{
+  display:flex; gap:5px; align-items:center; justify-content:center;
+  margin-top:6px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px; padding:7px 12px;
+  backdrop-filter:blur(10px);
+  flex-wrap:wrap;
+}
+.next-note-bar .nnb-label{
+  font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);
+  text-transform:uppercase; letter-spacing:.8px; margin-right:3px;
+}
+.next-note-pip{
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka One',sans-serif; font-size:11px;
+  color:#fff; font-weight:700;
+  border:2px solid rgba(255,255,255,0.3);
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+  transition:transform .2s, opacity .2s;
+  flex-shrink:0;
+  opacity:.85;
+}
+.next-note-pip.current{
+  transform:scale(1.25);
+  opacity:1;
+  border-color:rgba(255,255,255,0.7);
+  box-shadow:0 0 14px 3px rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.4);
+}
+.next-note-pip.faded{ opacity:.3; }
+
+/* ═══ COMBO MULTIPLIER POP ═══ */
+.combo-pop{
+  position:fixed; pointer-events:none; z-index:9500;
+  font-family:'Fredoka One',sans-serif;
+  text-shadow:0 2px 12px rgba(0,0,0,0.7);
+  animation:comboPop .75s ease-out forwards;
+  white-space:nowrap;
+}
+@keyframes comboPop{
+  0%{opacity:1;transform:translateY(0) scale(.8)}
+  20%{opacity:1;transform:translateY(-20px) scale(1.3)}
+  100%{opacity:0;transform:translateY(-70px) scale(1)}
+}
+
+/* ═══ TIMING FEEDBACK ═══ */
+.timing-pop{
+  position:fixed; pointer-events:none; z-index:9400;
+  font-family:'Fredoka One',sans-serif;
+  font-size:13px;
+  animation:timingPop .55s ease-out forwards;
+  white-space:nowrap;
+  border-radius:20px; padding:2px 9px;
+}
+@keyframes timingPop{
+  0%{opacity:1;transform:translateY(0) scale(.9)}
+  30%{opacity:1;transform:translateY(-10px) scale(1.08)}
+  100%{opacity:0;transform:translateY(-36px) scale(.9)}
+}
+
+/* ═══ CHALLENGE MODE BAR ═══ */
+.challenge-bar{
+  display:none;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:12px; padding:5px 14px;
+  text-align:center; margin-bottom:6px;
+  font-family:'Fredoka One',sans-serif;
+  font-size:13px; color:#ffd700;
+  gap:10px; align-items:center; justify-content:center;
+}
+.challenge-bar.active{ display:flex; }
+.challenge-lvl{ font-size:20px; color:#ff9f00; }
+.challenge-speed-bar{
+  background:rgba(255,255,255,0.1);
+  border-radius:6px; height:6px; width:90px; overflow:hidden;
+}
+.challenge-speed-fill{
+  height:100%; border-radius:6px;
+  background:linear-gradient(90deg,#4ade80,#ffd700,#f87171);
+  transition:width .5s ease;
+}
+
+/* ═══ REPEAT MODE PANEL ═══ */
+.repeat-panel{
+  display:none;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:14px; padding:10px 14px;
+  margin-bottom:6px; text-align:center;
+}
+.repeat-panel.active{ display:block; }
+.repeat-sequence{
+  display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:8px 0;
+}
+.repeat-pip{
+  width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka One',sans-serif; font-size:12px;
+  color:#fff; border:2px solid rgba(255,255,255,0.3);
+  transition:transform .15s, box-shadow .15s; flex-shrink:0;
+}
+.repeat-pip.done{
+  border-color:rgba(255,255,255,0.85);
+  box-shadow:0 0 12px 3px rgba(255,255,255,0.4);
+  transform:scale(1.18);
+}
+.repeat-pip.wrong{
+  animation:shakePip .3s ease-out;
+  border-color:#f87171;
+  box-shadow:0 0 12px 3px rgba(248,113,113,0.5);
+}
+@keyframes shakePip{
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)}
+}
+.repeat-status{
+  font-family:'Fredoka One',sans-serif; font-size:13px; color:var(--muted); margin-top:4px;
+}
+.repeat-round{
+  font-family:'Fredoka One',sans-serif; font-size:11px;
+  color:#a78bfa; letter-spacing:.5px; margin-bottom:2px;
+}
+
+/* ═══ SKY THEMES ═══ */
+#gameSky{ transition:background 1.2s ease; }
+.sky-ocean{
+  background:linear-gradient(180deg,
+    #001a3a 0%,#002d6e 20%,#00429a 40%,
+    #0060bb 60%,#0080cc 78%,#20aadd 90%,#55ccee 100%) !important;
+}
+.sky-forest{
+  background:linear-gradient(180deg,
+    #081508 0%,#0d2e0a 20%,#10400c 40%,
+    #1a5c10 60%,#247a14 78%,#3a9920 90%,#66bb44 100%) !important;
+}
+.sky-sunset{
+  background:linear-gradient(180deg,
+    #1a0530 0%,#3d0d5a 20%,#6e1a6e 38%,
+    #c23068 56%,#e06030 74%,#f0a040 88%,#ffd070 100%) !important;
+}
+.sky-beach{
+  background:linear-gradient(180deg,
+    #072060 0%,#1050aa 20%,#3080cc 40%,
+    #50a8dd 58%,#80c8ee 75%,#aaddf5 88%,#cceeff 100%) !important;
+}
+.sky-night{
+  background:linear-gradient(180deg,
+    #020008 0%,#060014 15%,#0a0228 30%,
+    #100540 48%,#1a0e5a 62%,#26206e 75%,
+    #3840a0 87%,#5a70c0 95%,#80a0d8 100%) !important;
+}
+
+</style>
+</head>
+<body>
+
+<div class="countdown-overlay" id="countdownOverlay">
+  <div class="countdown-circle">
+    <div class="countdown-num" id="countdownNum">3</div>
+    <div class="countdown-label" id="countdownLabel">Prepara-te!</div>
+    <div class="countdown-beat" id="countdownBeat">
+      <div class="cd-dot" id="cdDot0"></div>
+      <div class="cd-dot" id="cdDot1"></div>
+      <div class="cd-dot" id="cdDot2"></div>
+    </div>
+  </div>
+</div>
+
+<div class="starfield" id="starfield"></div>
+<div class="feedback-toast" id="toast"></div>
+
+<!-- Result overlay -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-box">
+    <h2 id="resultTitle">Parabéns! 🎉</h2>
+    <div class="stars" id="resultStars">⭐⭐⭐</div>
+    <div class="big-score" id="resultScore">0</div>
+    <div class="result-stats">
+      <div class="result-stat">
+        <div class="rv" id="resHits" style="color:#4ade80">0</div>
+        <div class="rl">Acertos</div>
+      </div>
+      <div class="result-stat">
+        <div class="rv" id="resMisses" style="color:#f87171">0</div>
+        <div class="rl">Erros</div>
+      </div>
+      <div class="result-stat">
+        <div class="rv" id="resAccuracy" style="color:#38bdf8">0%</div>
+        <div class="rl">Precisão</div>
+      </div>
+      <div class="result-stat">
+        <div class="rv" id="resMaxStreak" style="color:#a78bfa">0</div>
+        <div class="rl">Melhor Sequência</div>
+      </div>
+    </div>
+    <button class="btn-play-again" id="playAgainBtn">▶ Jogar Novamente</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="header">
+    <h1>🔔 Segue a Cor, Toca o Sino 🔔</h1>
+    <p>Toca os sinos quando as notas chegam à linha!</p>
+  </div>
+
+  <!-- Scoreboard -->
+  <div class="scoreboard">
+    <div class="score-card">
+      <div class="val" id="scoreVal">0</div>
+      <div class="lbl">Pontos</div>
+    </div>
+    <div class="score-card">
+      <div class="val" id="streakVal">0</div>
+      <div class="lbl">🔥 Sequência</div>
+    </div>
+    <div class="score-card">
+      <div class="val" id="maxStreakVal">0</div>
+      <div class="lbl">🏆 Melhor</div>
+    </div>
+    <div class="score-card">
+      <div class="val" id="accuracyVal">—</div>
+      <div class="lbl">Precisão</div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+    <div class="vb-wrapper" aria-label="Robô VanBerto's">
+    <div class="vb-robot mascote" id="mascote">
+      <svg viewBox="0 0 80 80" role="img" aria-label="VanBerto's">
+        <defs>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e5f2ff"/>
+            <stop offset="100%" stop-color="#bfdbfe"/>
+          </linearGradient>
+          <linearGradient id="visorGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#22d3ee"/>
+            <stop offset="100%" stop-color="#38bdf8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.35)"/>
+        <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#bodyGrad)"/>
+        <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+        <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#bodyGrad)"/>
+        <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#visorGrad)"/>
+        <!-- olhos -->
+        <circle class="vb-eye-left" cx="33" cy="23" r="2.5" fill="#0f172a"/>
+        <circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+        <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
+        <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+        <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+        <rect id="vb-arm" x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+        <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+        <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+      </svg>
+    </div>
+  </div>
+
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>🎵 Música</label>
+      <select id="song"></select>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+        <div class="note-count" id="noteCount"></div>
+        <div id="diffBadge" style="font-size:10px;font-family:'Fredoka One',sans-serif;padding:2px 8px;border-radius:20px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.3);color:#ffd700;letter-spacing:.5px;"></div>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>🐢 Velocidade</label>
+      <select id="tempo">
+        <option value="1300">Muito Lento</option>
+        <option value="1050">Lento</option>
+        <option value="840" selected>Normal</option>
+        <option value="660">Rápido</option>
+        <option value="520">Muito Rápido</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>⏱ Tempo de Queda</label>
+      <select id="lead">
+        <option value="4000">4 s</option>
+        <option value="5000" selected>5 s</option>
+        <option value="6000">6 s</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>🎮 Modo</label>
+      <select id="modeSelect">
+        <option value="listen">🎧 Ouvir (Automático)</option>
+        <option value="play">🎹 Jogar (Interativo)</option>
+        <option value="challenge">🚀 Desafio Progressivo</option>
+        <option value="repeat">🎯 Repete o que Ouves</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>🔔 Guia Sonoro</label>
+      <select id="guideVol">
+        <option value="0">Desligado</option>
+        <option value="0.08">Suave</option>
+        <option value="0.18" selected>Médio</option>
+        <option value="0.32">Alto</option>
+      </select>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-play" id="play">▶ Tocar</button>
+      <button class="btn btn-pause" id="pause" disabled>⏸ Pausa</button>
+      <button class="btn btn-stop" id="stop" disabled>⏹ Parar</button>
+    </div>
+  </div>
+
+  <!-- Challenge mode bar -->
+  <div class="challenge-bar" id="challengeBar">
+    <span>Nível</span>
+    <span class="challenge-lvl" id="challengeLvl">1</span>
+    <div class="challenge-speed-bar"><div class="challenge-speed-fill" id="challengeFill" style="width:10%"></div></div>
+    <span id="challengeHitsLeft" style="font-size:11px;color:var(--muted)">10 acertos para subir</span>
+  </div>
+
+  <!-- Repeat mode panel -->
+  <div class="repeat-panel" id="repeatPanel">
+    <div class="repeat-round" id="repeatRound">Ronda 1 — Sequência de 3</div>
+    <div class="repeat-sequence" id="repeatSeq"></div>
+    <div class="repeat-status" id="repeatStatus">🎵 Ouve com atenção...</div>
+  </div>
+
+  <div class="game-area" id="gameArea"></div>
+
+  <!-- Próximas notas -->
+  <div class="next-note-bar" id="nextNoteBar">
+    <span class="nnb-label">🎵 A seguir:</span>
+    <div id="nextNotePips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"></div>
+  </div>
+
+  <div class="hint keyboard-hint">
+    Teclado: <kbd>A</kbd>=Dó &nbsp;<kbd>S</kbd>=Ré &nbsp;<kbd>D</kbd>=Mi &nbsp;<kbd>F</kbd>=Fá &nbsp;<kbd>G</kbd>=Sol &nbsp;<kbd>H</kbd>=Lá &nbsp;<kbd>J</kbd>=Si &nbsp;<kbd>K</kbd>=Dó↑
+  </div>
+  <div class="hint touch-hint" style="display:none">
+    👆 Toca nos sinos quando as notas chegam à linha!
+  </div>
+
+</div>
+
+<script>
+(() => {
+  const NOTES = [
+    { id:"C",  name:"Dó",  freq:261.63, color:"#1b9e8a", dark:"#0d6b5e", key:"A" },
+    { id:"D",  name:"Ré",  freq:293.66, color:"#7b3fa0", dark:"#522878", key:"S" },
+    { id:"E",  name:"Mi",  freq:329.63, color:"#e0228c", dark:"#9e1560", key:"D" },
+    { id:"F",  name:"Fá",  freq:349.23, color:"#d42b2b", dark:"#941818", key:"F" },
+    { id:"G",  name:"Sol", freq:392.00, color:"#e07020", dark:"#9e4a0e", key:"G" },
+    { id:"A",  name:"Lá",  freq:440.00, color:"#c8b800", dark:"#8a7a00", key:"H" },
+    { id:"B",  name:"Si",  freq:493.88, color:"#4db848", dark:"#2e7a2a", key:"J" },
+    { id:"C2", name:"Dó↑", freq:523.25, color:"#30b8d4", dark:"#1a7e94", key:"K" },
+  ];
+  const ID2    = Object.fromEntries(NOTES.map(n=>[n.id,n]));
+  const KEY2ID = Object.fromEntries(NOTES.map(n=>[n.key.toLowerCase(),n.id]));
+
+  const SONGS = [
+    // Dó Ré Mi Fá Sol Lá Si Dó↑ = C D E F G A B C2
+    // Duração: 1=semínima, 2=mínima, 3=mínima com ponto, 4=semibreve, 0.5=colcheia, 1.5=semínima com ponto
+    // difficulty: 1=⭐ Fácil, 2=⭐⭐ Médio, 3=⭐⭐⭐ Difícil
+
+    /* ══════════════════════════════════════════════
+       ⭐  FÁCIL — poucas notas, ritmo simples, 4/4
+    ═══════════════════════════════════════════════ */
+
+    {title:"🎼 Escala Completa",
+     bpm:80,
+     difficulty:1,
+     theme:"night",
+     seq:[
+       "C","D","E","F","G","A","B",["C2",2],
+       "C2","B","A","G","F","E","D",["C",2],
+       "C","D","E","F","G","A","B",["C2",2],
+       "C2","B","A","G","F","E","D",["C",4]
+     ]},
+
+    {title:"✨ Twinkle Twinkle Little Star",
+     bpm:88,
+     difficulty:1,
+     // Compasso 4/4 — cada compasso = 4 batidas
+     seq:[
+       "C","C","G","G",                          // Twin-kle twin-kle   (4 ✓)
+       "A","A",["G",2],                          // lit-tle star        (4 ✓)
+       "F","F","E","E",                          // How I won-der       (4 ✓)
+       "D","D",["C",2],                          // what you are        (4 ✓)
+       "G","G","F","F",                          // Up a-bove the       (4 ✓)
+       "E","E",["D",2],                          // world so high       (4 ✓)
+       "G","G","F","F",                          // Like a dia-mond     (4 ✓)
+       "E","E",["D",2],                          // in the sky          (4 ✓)
+       "C","C","G","G",                          // Twin-kle twin-kle   (4 ✓)
+       "A","A",["G",2],                          // lit-tle star        (4 ✓)
+       "F","F","E","E",                          // How I won-der       (4 ✓)
+       "D","D",["C",4]                           // what you are        (4 ✓)
+     ]},
+
+    {title:"🐑 Mary Had a Little Lamb",
+     bpm:96,
+     difficulty:1,
+     // Compasso 4/4 — 4 batidas por compasso
+     seq:[
+       "E","D","C","D",                          // Ma-ry had a         (4 ✓)
+       "E","E",["E",2],                          // lit-tle lamb        (4 ✓)
+       "D","D",["D",2],                          // lit-tle lamb        (4 ✓)
+       "E","E",["E",2],                          // lit-tle lamb        (4 ✓)
+       "E","D","C","D",                          // Ma-ry had a         (4 ✓)
+       "E","E","E","E",                          // lit-tle lamb whose  (4 ✓)
+       "D","D","E","D",                          // fleece was white as (4 ✓)
+       ["C",4]                                   // snow                (4 ✓)
+     ]},
+
+    {title:"🌊 Rema Rema a Tua Barca",
+     bpm:88,
+     difficulty:1,
+     theme:"ocean",
+     // Compasso 6/8 — 2 tempos de 3 colcheias; colcheia=0.5, tempo=1.5, compasso=3
+     seq:[
+       ["C",0.5],["C",0.5],["C",0.5],           // Re-ma re-     (1.5 ✓)
+       ["D",0.5],["E",1],                        // ma a tua      (1.5 ✓)
+       ["E",0.5],["D",0.5],["E",0.5],           // bar-ca re-    (1.5 ✓)
+       ["F",0.5],["G",1],                        // ma com a-     (1.5 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],           // a-le-gri-     (1.5 ✓)
+       ["E",0.5],["E",0.5],["E",0.5],           // a a-le-       (1.5 ✓)
+       ["C",0.5],["C",0.5],["C",0.5],           // gri-a a-      (1.5 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],           // le-gri-a      (1.5 ✓)
+       ["G",0.5],["F",0.5],["E",0.5],           // a vi-da       (1.5 ✓)
+       ["D",0.5],["D",0.5],["D",0.5],           // é um so-      (1.5 ✓)
+       ["C",3]                                   // nho!          (3 ✓)
+     ]},
+
+    {title:"🦈 Baby Shark",
+     bpm:108,
+     difficulty:1,
+     // Compasso 4/4 — pickup de 2 batidas (anacruse)
+     seq:[
+       // ── Baby Shark ──
+       ["D",0.5],["E",0.5],["G",1],             // Ba-by shark       (2 — pickup)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["D",0.5],["E",0.5],["G",2],["G",1],    // Ba-by shark doo~   (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["D",0.5],["E",0.5],["G",2],["G",1],    // Ba-by shark doo~   (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5], // doo doo doo doo   (2)
+       ["G",2],                                  // doo~              (2 = 4 ✓)
+       // ── Mommy Shark ──
+       ["D",0.5],["E",0.5],["G",1],             // Mom-my shark      (2 — pickup)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["D",0.5],["E",0.5],["G",2],["G",1],    // Mom-my shark doo~  (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
+       ["G",2],["G",2]                           // Mom-my shark!     (4 ✓)
+     ]},
+
+    /* ══════════════════════════════════════════════
+       ⭐⭐  MÉDIO — ritmo variado, algumas colcheias
+    ═══════════════════════════════════════════════ */
+
+    {title:"🐦 Frère Jacques",
+     bpm:96,
+     difficulty:2,
+     // Compasso 4/4 — cânone francês
+     seq:[
+       "C","D","E","C",                          // Frè-re Jac-ques   (4 ✓)
+       "C","D","E","C",                          // Frè-re Jac-ques   (4 ✓)
+       "E","F",["G",2],                          // dor-mez vous?     (4 ✓)
+       "E","F",["G",2],                          // dor-mez vous?     (4 ✓)
+       ["G",0.5],["A",0.5],["G",0.5],["F",0.5],"E","C",   // son-nez les ma-ti-nes (4 ✓)
+       ["G",0.5],["A",0.5],["G",0.5],["F",0.5],"E","C",   // son-nez les ma-ti-nes (4 ✓)
+       "C",["G",1],["C",2],                      // ding ding dong    (4 ✓)
+       "C",["G",1],["C",2]                       // ding ding dong    (4 ✓)
+     ]},
+
+    {title:"🌿 Alecrim",
+     bpm:96,
+     difficulty:2,
+     theme:"forest",
+     // Compasso 2/4 — 2 batidas por compasso
+     seq:[
+       ["G",0.5],["G",0.5],["E",0.5],["E",0.5], // A-le-crim dou-   (2 ✓)
+       ["G",2],                                   // ra-do            (2 ✓)
+       ["A",0.5],["A",0.5],["G",0.5],["G",0.5], // que nas-ces no   (2 ✓)
+       ["E",2],                                   // cam-po           (2 ✓)
+       ["G",0.5],["G",0.5],["E",0.5],["E",0.5], // cres-ces nas a-  (2 ✓)
+       ["G",2],                                   // lei-vas          (2 ✓)
+       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // sem ser plan-ta- (2 ✓)
+       ["D",2],                                   // do               (2 ✓)
+       ["G",0.5],["G",0.5],["E",0.5],["E",0.5], // A-le-crim dou-   (2 ✓)
+       ["G",2],                                   // ra-do            (2 ✓)
+       ["A",0.5],["A",0.5],["G",0.5],["G",0.5], // que nas-ces no   (2 ✓)
+       ["E",2],                                   // cam-po           (2 ✓)
+       ["C",0.5],["D",0.5],["E",0.5],["F",0.5], // quem te plan-    (2 ✓)
+       ["G",2],                                   // tou              (2 ✓)
+       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // foi o meu a-     (2 ✓)
+       ["C",4]                                    // mor              (4 ✓ final)
+     ]},
+
+    {title:"🎈 Cai Cai Balão",
+     bpm:92,
+     difficulty:2,
+     theme:"sunset",
+     // Compasso 2/4 — 2 batidas por compasso
+     seq:[
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // Cai cai ba-    (2 ✓)
+       ["G",2],                                   // lão            (2 ✓)
+       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // cai cai ba-    (2 ✓)
+       ["A",2],                                   // lão            (2 ✓)
+       ["C2",0.5],["C2",0.5],["B",0.5],["A",0.5],// cai a-qui na  (2 ✓)
+       ["G",0.5],["E",0.5],["C",1],              // mi-nha mão     (2 ✓)
+       ["G",1],["G",1],                           // não não        (2 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai cai ba-    (2 ✓)
+       ["G",2],                                   // lão            (2 ✓)
+       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // cai cai ba-    (2 ✓)
+       ["A",2],                                   // lão            (2 ✓)
+       ["C2",0.5],["B",0.5],["A",0.5],["G",0.5],// cai a-qui no   (2 ✓)
+       ["C",4]                                    // chão           (4 ✓ final)
+     ]},
+
+    {title:"🎂 Parabéns a Você",
+     bpm:84,
+     difficulty:2,
+     // Compasso 3/4 (valsa) — 3 batidas por compasso
+     // Pickup (anacruse): 1 batida antes do compasso 1
+     seq:[
+       ["G",0.5],["G",0.5],                     // [pickup] Pa-ra-      (1 ✓)
+       ["A",1],["G",1],["E",1],                 // béns a vo-cê  (3 ✓ — corrigido: E não C2)
+       ["B",3],                                  // ~~~           (3 ✓)
+       ["G",0.5],["G",0.5],                     // [pickup] Pa-ra-      (1 ✓)
+       ["A",1],["G",1],["D",1],                 // béns a vo-    (3 ✓)
+       ["C",3],                                  // cê            (3 ✓)
+       ["G",0.5],["G",0.5],                     // [pickup] Pa-ra-      (1 ✓)
+       ["G",1],["E",1],["C",1],                 // béns que-ri-  (3 ✓)
+       ["B",1],["A",2],                          // do a-mi-go    (3 ✓)
+       ["G",0.5],["G",0.5],["E",1],["C",1],    // pa-ra-béns a  (3 ✓)
+       ["D",1],["C",2]                           // vo-cê         (3 ✓)
+     ]},
+
+    {title:"🎵 Ode à Alegria — Beethoven",
+     bpm:104,
+     difficulty:2,
+     // Compasso 4/4, compasso por compasso
+     seq:[
+       "E","E","F","G",                          // Ale-gria a-   (4 ✓)
+       "G","F","E","D",                          // le-gria can-  (4 ✓)
+       "C","C","D","E",                          // tan-do a-     (4 ✓)
+       ["E",1.5],["D",0.5],["D",2],             // le-gri-a      (4 ✓)
+       "E","E","F","G",                          // Ale-gria a-   (4 ✓)
+       "G","F","E","D",                          // le-gria can-  (4 ✓)
+       "C","C","D","E",                          // tan-do a-     (4 ✓)
+       ["D",1.5],["C",0.5],["C",2]              // le-gri-a      (4 ✓)
+     ]},
+
+    {title:"🐻 Os Ursinhos Carinhosos",
+     bpm:96,
+     difficulty:2,
+     // Compasso 4/4 — 4 batidas por compasso
+     seq:[
+       "C","E","G","E",                          // U-rsi-nhos ca-  (4 ✓)
+       "C","E",["G",2],                          // ri-nho-sos      (4 ✓)
+       ["C2",2],["B",1],["G",1],                // sem-pre a brin- (4 ✓ — corrigido: G com duração explícita)
+       ["E",2],["G",2],                          // car sem-pre a-  (4 ✓)
+       "C","E","G","E",                          // U-rsi-nhos ca-  (4 ✓)
+       "C","D",["E",2]                           // ri-nho-sos!     (4 ✓)
+     ]},
+
+    {title:"🐟 Se Eu Fosse um Peixinho",
+     bpm:80,
+     difficulty:2,
+     theme:"ocean",
+     // Compasso 3/4
+     seq:[
+       ["G",1.5],["G",0.5],["A",1],             // Se eu fos-se um  (3 ✓)
+       ["G",1.5],["E",1.5],                     // pei-xi-nho       (3 ✓)
+       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3 ✓)
+       ["C",3],                                  // dar              (3 ✓)
+       ["C",1.5],["C",0.5],["D",1],             // vi-nha ao fun-do (3 ✓)
+       ["E",1.5],["C",1.5],                     // do mar           (3 ✓)
+       ["G",2],["G",1],                          // bus-car-te       (3 ✓)
+       ["G",3],                                  // a ti             (3 ✓)
+       ["G",1.5],["G",0.5],["A",1],             // se eu fos-se um  (3 ✓)
+       ["G",1.5],["E",1.5],                     // pei-xi-nho       (3 ✓)
+       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3 ✓)
+       ["C",3],                                  // dar              (3 ✓)
+       ["C",1],["D",0.5],["E",1],["F",0.5],     // pe-ga-va-te à    (3 ✓)
+       ["G",1.5],["E",1.5],                     // cau-da           (3 ✓)
+       ["C",3]                                   // e cá!            (3 ✓)
+     ]},
+
+    {title:"🎄 Noite Feliz",
+     bpm:68,
+     difficulty:2,
+     // Compasso 3/4 (valsa) — 3 batidas por compasso
+     seq:[
+       ["G",1],["A",0.5],["G",1.5],             // Noi-te fe-    (3 ✓)
+       ["E",3],                                  // liz           (3 ✓)
+       ["G",1],["A",0.5],["G",1.5],             // Noi-te fe-    (3 ✓)
+       ["E",3],                                  // liz           (3 ✓)
+       ["D",2],["D",1],                          // Res-plan-de-  (3 ✓)
+       ["B",3],                                  // ce            (3 ✓)
+       ["A",2],["A",1],                          // A luz ce-     (3 ✓)
+       ["C2",3],                                 // les-tial      (3 ✓)
+       ["B",1.5],["A",0.5],["G",1],             // que a-nun-cia (3 ✓)
+       ["G",1],["D",0.5],["D",1.5],             // ao mun-do a   (3 ✓)
+       ["F",1],["E",0.5],["C",1.5],             // paz e o a-    (3 ✓)
+       ["G",1],["G",0.5],["G",1.5],             // mor sal-va-   (3 ✓)
+       ["E",1],["G",0.5],["G",1.5],             // dor Cris-to   (3 ✓)
+       ["A",3],                                  // nas-          (3 ✓)
+       ["G",1],["F",0.5],["E",1.5],             // ceu! Noi-te   (3 ✓)
+       ["C",3]                                   // fe-liz        (3 ✓)
+     ]},
+
+    /* ══════════════════════════════════════════════
+       ⭐⭐⭐  DIFÍCIL — ritmo complexo, muitas notas
+    ═══════════════════════════════════════════════ */
+
+    {title:"🦜 Papagaio Loiro",
+     bpm:92,
+     difficulty:3,
+     theme:"forest",
+     // Compasso 2/4 — 2 batidas por compasso
+     seq:[
+       ["E",0.5],["D",0.5],["C",0.5],["D",0.5], // Pa-pa-ga-io      (2 ✓)
+       ["E",2],                                   // loi-ro           (2 ✓)
+       ["E",0.5],["D",0.5],["C",0.5],["D",0.5], // do bi-co         (2 ✓)
+       ["C",2],                                   // dou-ra-do        (2 ✓)
+       ["C",0.5],["C",0.5],["C",1],              // do bi-co do      (2 ✓)
+       ["E",0.5],["D",0.5],["C",0.5],["D",0.5], // Pa-pa-ga-io      (2 ✓)
+       ["E",2],                                   // loi-ro           (2 ✓)
+       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // do bi-co dou-    (2 ✓)
+       ["C",2],                                   // ra-do            (2 ✓)
+       ["C",0.5],["C",0.5],["C",1],              // do bi-co do      (2 ✓)
+       ["G",0.5],["A",0.5],["G",0.5],["F",0.5], // quan-do é que    (2 ✓)
+       ["E",0.5],["D",0.5],["E",1],              // tu fa-las        (2 ✓)
+       ["G",0.5],["A",0.5],["G",0.5],["F",0.5], // pa-pa-ga-io      (2 ✓)
+       ["E",2],                                   // ~~~              (2 ✓)
+       ["E",0.5],["F",0.5],["E",0.5],["D",0.5], // eu sei que tu    (2 ✓)
+       ["C",0.5],["D",0.5],["E",1],              // sa-bes fa-lar    (2 ✓)
+       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // eu sei que tu    (2 ✓)
+       ["C",4]                                    // lar!             (4 ✓ final)
+     ]},
+
+    {title:"🎵 Lullaby de Brahms",
+     bpm:72,
+     difficulty:3,
+     // Compasso 3/4 (valsa) — 3 batidas por compasso
+     seq:[
+       ["G",1],["G",0.5],["E",1.5],             // Gu-ten A-bend   (3 ✓)
+       ["G",1],["E",2],                          // gut' Nacht       (3 ✓)
+       ["G",1],["A",0.5],["G",1.5],             // mit Ro-sen be-   (3 ✓)
+       ["F",0.5],["E",2.5],                      // deckt            (3 ✓)
+       ["F",1],["E",0.5],["D",1.5],             // mit Näg-lein be- (3 ✓)
+       ["C",3],                                  // steckt           (3 ✓)
+       ["E",1],["G",1],["G",1],                  // schlupf un-ter   (3 ✓)
+       ["C2",1.5],["B",1.5],                    // die De-ck        (3 ✓)
+       ["D",1.5],["D",0.5],["B",1],             // morgen früh      (3 ✓)
+       ["D",1],["B",1],["G",1],                  // wenn Gott will   (3 ✓)
+       ["D",1.5],["E",0.5],["D",1],             // wirst du wie-    (3 ✓)
+       ["C",1],["B",2],                          // der ge-weckt     (3 ✓)
+       ["G",1],["G",0.5],["E",1.5],             // Gu-ten A-bend   (3 ✓)
+       ["G",1],["E",2],                          // gut' Nacht       (3 ✓)
+       ["G",1],["A",0.5],["G",1.5],             // mit Ro-sen be-   (3 ✓)
+       ["F",0.5],["E",2.5]                         // deckt!           (3 ✓ final)
+     ]},
+
+    {title:"🔔 Jingle Bells",
+     bpm:116,
+     difficulty:3,
+     // Compasso 4/4 — 4 batidas por compasso
+     seq:[
+       "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
+       "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
+       "E","G","C","D",                          // Jin-gle all the  (4 ✓)
+       ["E",4],                                  // wayyy            (4 ✓)
+       "F","F","F","F",                          // Oh what fun it   (4 ✓)
+       ["F",1],["E",1],["E",1],["E",1],         // is to ride in    (4 ✓)
+       ["D",1],["D",1],["E",1],["D",1],         // a one-horse o-   (4 ✓)
+       ["G",2],["G",2],                          // pen sleigh — hey (4 ✓)
+       "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
+       "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
+       "E","G","C","D",                          // Jin-gle all the  (4 ✓)
+       ["E",4],                                  // wayyy            (4 ✓)
+       "F","F","F","F",                          // Oh what fun it   (4 ✓)
+       ["F",1],["E",1],["E",1],["E",1],         // is to ride in    (4 ✓)
+       ["G",1],["G",1],["F",1],["D",1],         // a one-horse o-   (4 ✓)
+       ["C",4]                                   // pen sleigh!      (4 ✓)
+     ]},
+
+    {title:"🎁 We Wish You a Merry Christmas",
+     bpm:104,
+     difficulty:3,
+     // Compasso 3/4 — pickup de 1 batida
+     seq:[
+       ["C",1],                                  // [pickup] We
+       ["F",1],["F",1],["G",1],                  // wish you a       (3 ✓)
+       ["F",1],["E",2],                          // mer-ry Christ-   (3 ✓)
+       ["D",1],["D",1],["D",1],                  // mas we wish you  (3 ✓)
+       ["G",1],["G",2],                          // a Mer-ry         (3 ✓)
+       ["A",1],["G",1],["F",1],                  // Christ-mas and a (3 ✓)
+       ["E",2],["C",1],                          // Hap-py New       (3 ✓)
+       ["A",1],["A",1],["A",1],                  // Year good ti-    (3 ✓)
+       ["B",1],["A",1],["G",1],                  // dings we bring   (3 ✓)
+       ["F",1],["E",1],["C",1],                  // to you and your  (3 ✓)
+       ["D",1],["G",1],["E",1],                  // kin we wish you  (3 ✓)
+       ["F",2],["C",1],                          // a Mer-ry         (3 ✓)
+       ["F",1],["F",1],["G",1],                  // Christ-mas and a (3 ✓)
+       ["F",1],["E",2],                          // Hap-py New Year! (3 ✓)
+       ["C",3]                                   // ~~~              (3 ✓)
+     ]},
+
+    {title:"⛪ Oh When the Saints",
+     bpm:92,
+     difficulty:3,
+     // Compasso 4/4 — pickup de 3 notas
+     seq:[
+       ["C",1],["E",1],["F",1],                  // [pickup] Oh when the (3 — pickup)
+       ["G",4],                                   // saints           (4 ✓)
+       ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
+       ["G",4],                                   // saints           (4 ✓)
+       ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
+       ["G",2],["E",2],                          // saints go        (4 ✓)
+       ["C",1],["E",1],["F",2],                  // mar-ching in     (4 ✓)
+       ["C",1],                                  // Oh               (pickup)
+       ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
+       ["G",2],["G",1],["G",1],                  // saints go ma-    (4 ✓)
+       ["F",2],["E",1],["C",1],                  // rching in        (4 ✓)
+       ["D",1],["E",1],["C",2],                  // Oh Lord I        (4 ✓)
+       ["G",1],["A",2],["G",1],                  // want to be       (4 ✓)
+       ["G",4]                                   // in that number   (4 ✓)
+     ]},
+
+    {title:"🎼 Ode à Alegria — Beethoven (Completo)",
+     bpm:108,
+     difficulty:3,
+     theme:"beach",
+     seq:[
+       "E","E","F","G",                          // Ale-gria a-    (4 ✓)
+       "G","F","E","D",                          // le-gria can-   (4 ✓)
+       "C","C","D","E",                          // tan-do a-      (4 ✓)
+       ["E",1.5],["D",0.5],["D",2],             // le-gri-a       (4 ✓)
+       "E","E","F","G",                          // Ale-gria a-    (4 ✓)
+       "G","F","E","D",                          // le-gria can-   (4 ✓)
+       "C","C","D","E",                          // tan-do a-      (4 ✓)
+       ["D",1.5],["C",0.5],["C",2],             // le-gri-a       (4 ✓)
+       "D","D","E","C",                          // ponte D-D-E-C  (4 ✓)
+       ["D",1],["E",0.5],["F",0.5],"E","C",     // D-E.F-E-C      (4 ✓)
+       ["D",1],["E",0.5],["F",0.5],"E","D",     // D-E.F-E-D      (4 ✓)
+       "C","D",["G",2],                          // C-D-Sol        (4 ✓)
+       "E","E","F","G",                          // Ale-gria a-    (4 ✓)
+       "G","F","E","D",                          // le-gria can-   (4 ✓)
+       "C","C","D","E",                          // tan-do a-      (4 ✓)
+       ["D",1.5],["C",0.5],["C",2],             // le-gri-a!      (4 ✓)
+       ["C",4]                                   // ~~~             (4 ✓ coda final)
+     ]},
+
+    {title:"🎻 Für Elise — Beethoven",
+     bpm:72,
+     difficulty:3,
+     theme:"night",
+     // Compasso 3/4 — adaptação para 8 sinos (nota: D# substituído por E)
+     seq:[
+       ["E",0.5],["D",0.5],["E",0.5],["D",0.5],["E",0.5],["B",0.5], // E-D-E-D-E-B  (3 ✓)
+       ["D",0.5],["C",0.5],["A",2],                                   // D-C-Lá       (3 ✓)
+       ["C",1],["E",1],["A",1],                                       // Dó-Mi-Lá     (3 ✓)
+       ["B",2],["E",1],                                               // Si—Mi        (3 ✓)
+       ["G",1],["B",1],["E",1],                                       // Sol-Si-Mi    (3 ✓)
+       ["C2",2],["E",0.5],["D",0.5],                                  // Dó↑—E-D      (3 ✓)
+       ["E",0.5],["D",0.5],["E",0.5],["B",0.5],["D",0.5],["C",0.5], // E-D-E-B-D-C  (3 ✓)
+       ["A",2],["C",1],                                               // Lá—Dó        (3 ✓)
+       ["E",1],["A",1],["B",1],                                       // Mi-Lá-Si     (3 ✓)
+       ["E",1],["C2",1],["B",1],                                      // Mi-Dó↑-Si    (3 ✓)
+       ["A",3]                                                         // Lá~~~        (3 ✓)
+     ]},
+
+    {title:"🎪 Can Can — Offenbach",
+     bpm:124,
+     difficulty:3,
+     theme:"sunset",
+     // Compasso 2/4 — 2 batidas por compasso, vivace!
+     seq:[
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5], // Can can can can  (2 ✓)
+       ["A",0.5],["G",0.5],["F",0.5],["G",0.5], // can can can can  (2 ✓)
+       ["C",1.5],["E",0.5],                       // can — can       (2 ✓)
+       ["E",0.5],["E",0.5],["E",0.5],["E",0.5], // can can can can  (2 ✓)
+       ["F",0.5],["E",0.5],["D",0.5],["E",0.5], // can can can can  (2 ✓)
+       ["G",1.5],["G",0.5],                       // can — voi-      (2 ✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5], // là le can-can   (2 ✓)
+       ["A",0.5],["G",0.5],["F",0.5],["G",0.5], // du pa-ra-dis    (2 ✓)
+       ["C",1],["C",0.5],["D",0.5],              // can — C-D       (2 ✓)
+       ["E",0.5],["F",0.5],["G",0.5],["A",0.5], // E-F-G-A         (2 ✓)
+       ["B",0.5],["C2",1.5],                      // B-Dó↑ can!     (2 ✓ — corrigido: soma 2)
+       ["C2",4]                                   // ~~~             (4 ✓)
+     ]},
+  ];
+
+  /* ═══ DOM refs ═══ */
+  const songSel     = document.getElementById("song");
+  const tempoSel    = document.getElementById("tempo");
+  const leadSel     = document.getElementById("lead");
+  const modeSelect  = document.getElementById("modeSelect");
+  const guideVolSel = document.getElementById("guideVol");
+  const playBtn     = document.getElementById("play");
+  const pauseBtn    = document.getElementById("pause");
+  const stopBtn     = document.getElementById("stop");
+  const mascote     = document.getElementById("mascote");
+  const noteCount   = document.getElementById("noteCount");
+  const gameArea    = document.getElementById("gameArea");
+  const scoreVal    = document.getElementById("scoreVal");
+  const streakVal   = document.getElementById("streakVal");
+  const maxStreakVal= document.getElementById("maxStreakVal");
+  const accuracyVal = document.getElementById("accuracyVal");
+  const progressBar = document.getElementById("progressBar");
+  const toast       = document.getElementById("toast");
+  const resultOverlay= document.getElementById("resultOverlay");
+  const playAgainBtn= document.getElementById("playAgainBtn");
+  const nextNotePips= document.getElementById("nextNotePips");
+  const challengeBar  = document.getElementById("challengeBar");
+  const challengeLvl  = document.getElementById("challengeLvl");
+  const challengeFill = document.getElementById("challengeFill");
+  const challengeHitsLeft = document.getElementById("challengeHitsLeft");
+  const repeatPanel   = document.getElementById("repeatPanel");
+  const repeatSeq     = document.getElementById("repeatSeq");
+  const repeatStatus  = document.getElementById("repeatStatus");
+  const repeatRound   = document.getElementById("repeatRound");
+
+  /* ═══ Stars ═══ */
+  const sf=document.getElementById("starfield");
+  for(let i=0;i<80;i++){
+    const s=document.createElement("div"); s.className="star-dot";
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s`;
+    sf.appendChild(s);
+  }
+
+  /* ═══ Song list ═══ */
+  const DIFF_STARS = {1:"⭐ ", 2:"⭐⭐ ", 3:"⭐⭐⭐ "};
+  const DIFF_LABEL = {1:"Fácil", 2:"Médio", 3:"Difícil"};
+
+  let lastDiff = 0;
+  SONGS.forEach((s,i)=>{
+    const diff = s.difficulty || 1;
+    if(diff !== lastDiff){
+      const og = document.createElement("optgroup");
+      og.label = `${DIFF_STARS[diff]}${DIFF_LABEL[diff]}`;
+      songSel.appendChild(og);
+      lastDiff = diff;
+    }
+    const o=document.createElement("option");
+    o.value=i;
+    o.textContent = DIFF_STARS[diff] + s.title;
+    songSel.lastChild.appendChild(o);
+  });
+  const diffBadge = document.getElementById("diffBadge");
+  const DIFF_STARS_FULL = {1:"⭐ Fácil", 2:"⭐⭐ Médio", 3:"⭐⭐⭐ Difícil"};
+  const DIFF_COLORS = {
+    1:"background:rgba(74,222,128,0.18);border-color:rgba(74,222,128,0.4);color:#4ade80",
+    2:"background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.4);color:#fbbf24",
+    3:"background:rgba(248,113,113,0.18);border-color:rgba(248,113,113,0.4);color:#f87171"
+  };
+
+  function updateCount(){
+    const song = SONGS[parseInt(songSel.value)||0];
+    noteCount.textContent=`${song.seq.length} notas`;
+    applySkyTheme(song.theme);
+    const d = song.difficulty || 1;
+    diffBadge.textContent = DIFF_STARS_FULL[d];
+    diffBadge.style.cssText = `font-size:10px;font-family:'Fredoka One',sans-serif;padding:2px 8px;border-radius:20px;border:1px solid;letter-spacing:.5px;${DIFF_COLORS[d]}`;
+  }
+  songSel.addEventListener("change",updateCount); updateCount();
+
+  /* ═══ Sky Theme ═══ */
+  function applySkyTheme(theme){
+    const sky = document.getElementById("gameSky");
+    if(!sky) return;
+    sky.className = "";
+    if(theme) sky.classList.add("sky-"+theme);
+  }
+
+  /* ═══ Color helper ═══ */
+  function lighten(hex,p){
+    const r=Math.min(255,parseInt(hex.slice(1,3),16)+p);
+    const g=Math.min(255,parseInt(hex.slice(3,5),16)+p);
+    const b=Math.min(255,parseInt(hex.slice(5,7),16)+p);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  /* ═══ Bell SVG ═══ */
+  function makeBellSVG(color,dark,uid){
+    const lt=lighten(color,50);
+    return `<svg class="bell-svg" viewBox="0 0 70 82" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="rg${uid}" cx="36%" cy="26%" r="68%">
+          <stop offset="0%" stop-color="${lt}"/>
+          <stop offset="50%" stop-color="${color}"/>
+          <stop offset="100%" stop-color="${dark}"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="35" cy="76" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
+      <path d="M13,58 Q11,38 15,25 Q19,10 35,7 Q51,10 55,25 Q59,38 57,58 Z"
+            fill="url(#rg${uid})"/>
+      <path d="M17,52 Q16,34 19,23 Q21,15 27,12"
+            stroke="rgba(255,255,255,0.38)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="27" cy="17" rx="7" ry="3.5" fill="rgba(255,255,255,0.2)" transform="rotate(-22,27,17)"/>
+      <ellipse cx="35" cy="58" rx="24" ry="8.5" fill="${dark}"/>
+      <ellipse cx="35" cy="56" rx="24" ry="8.5" fill="${color}"/>
+      <ellipse cx="25" cy="53.5" rx="9" ry="3" fill="rgba(255,255,255,0.22)"/>
+      <rect x="31" y="1" width="8" height="9" rx="4" fill="#d0d8e4"/>
+      <ellipse cx="35" cy="10" rx="5.5" ry="3.5" fill="${lt}"/>
+      <line x1="35" y1="56" x2="35" y2="66" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="35" cy="68" r="4.5" fill="#888"/>
+    </svg>`;
+  }
+
+  /* ═══ Build game area ═══ */
+  const dropZones={}, bellCells={}, hitLines={}, laneCols={};
+
+  const sky=document.createElement("div");
+  sky.id="gameSky";
+  sky.style.cssText="position:absolute;top:0;left:0;right:0;height:clamp(160px,50vh,600px);z-index:0;pointer-events:none;" +
+    "background:linear-gradient(180deg,#050112 0%,#0a0228 15%,#10063d 30%,#180f5a 48%,#22196e 62%,#2e2e80 75%,#4050a0 87%,#6080c0 95%,#90b0d8 100%)";
+  gameArea.style.position="relative";
+  gameArea.appendChild(sky);
+
+  NOTES.forEach((n,i)=>{
+    const col=document.createElement("div");
+    col.className="lane-col";
+
+    const dz=document.createElement("div");
+    dz.className="drop-zone";
+
+    const wz=document.createElement("div"); wz.className="warn-zone";
+    dz.appendChild(wz);
+
+    const hl=document.createElement("div"); hl.className="hitline";
+    dz.appendChild(hl);
+    hitLines[n.id]=hl;
+
+    /* snowflakes */
+    const flakeChars=["❄","❅","❆","✦","✧"];
+    function addFlake(){
+      const f=document.createElement("div"); f.className="flake";
+      f.textContent=flakeChars[Math.floor(Math.random()*flakeChars.length)];
+      const sz=8+Math.random()*9;
+      f.style.cssText=`left:${5+Math.random()*90}%;animation-duration:${5+Math.random()*6}s;font-size:${sz}px;color:rgba(255,255,255,${.25+Math.random()*.55})`;
+      dz.appendChild(f);
+      setTimeout(()=>f.remove(),13000);
+    }
+    setInterval(addFlake, 850+i*95);
+
+    col.appendChild(dz);
+    dropZones[n.id]=dz;
+
+    const bc=document.createElement("div");
+    bc.className="bell-cell";
+    bc.style.setProperty("--bc", n.color);
+    bc.innerHTML=`${makeBellSVG(n.color,n.dark,n.id)}<div class="bell-name">${n.name}</div><div class="bell-key-hint">[${n.key}]</div>`;
+    bc.addEventListener("pointerdown",()=>{ handlePlayerInput(n.id, bc); });
+    col.appendChild(bc);
+    bellCells[n.id]=bc;
+    laneCols[n.id]=col;
+
+    gameArea.appendChild(col);
+  });
+
+  /* snow overlay */
+  const snowEl=document.createElement("div"); snowEl.className="snow-overlay";
+  snowEl.innerHTML=`<svg style="position:absolute;bottom:0;left:0;width:100%;height:100%" viewBox="0 0 800 115" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,72 Q80,44 160,64 Q240,82 320,50 Q400,26 480,50 Q560,72 640,46 Q720,26 800,58 L800,115 L0,115 Z" fill="white" opacity="0.87"/>
+    <path d="M0,94 Q100,76 200,92 Q300,110 400,86 Q500,65 600,89 Q700,110 800,96 L800,115 L0,115 Z" fill="white"/>
+    <polygon points="20,74 40,30 60,74" fill="#0a3018"/>
+    <polygon points="26,56 40,22 54,56" fill="#0d4020"/>
+    <rect x="34" y="74" width="12" height="12" fill="#5c3010"/>
+    <circle cx="40" cy="21" r="3.5" fill="#ffd700"/>
+    <polygon points="736,74 756,30 776,74" fill="#0a3018"/>
+    <polygon points="742,56 756,22 770,56" fill="#0d4020"/>
+    <rect x="750" y="74" width="12" height="12" fill="#5c3010"/>
+    <circle cx="756" cy="21" r="3.5" fill="#ffd700"/>
+  </svg>`;
+  gameArea.appendChild(snowEl);
+
+  /* ═══ ringBell ═══ */
+  function ringBell(el){
+    el.classList.add("hit");
+    const r=document.createElement("div"); r.className="ripple";
+    el.appendChild(r);
+    setTimeout(()=>r.remove(),560);
+    setTimeout(()=>el.classList.remove("hit"),190);
+  }
+
+  /* ═══ Audio ═══ */
+  let audioCtx=null, master=null, limiter=null;
+  function ensureAudio(){
+    if(!audioCtx){
+      audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+      master=audioCtx.createGain(); master.gain.value=0.82;
+      limiter=audioCtx.createDynamicsCompressor();
+      limiter.threshold.value=-12; limiter.knee.value=6;
+      limiter.ratio.value=10; limiter.attack.value=0.001; limiter.release.value=0.08;
+      master.connect(limiter); limiter.connect(audioCtx.destination);
+    }
+    if(audioCtx.state==="suspended") audioCtx.resume();
+  }
+  function playBell(freq,kind){
+    ensureAudio();
+    const now=audioCtx.currentTime;
+    const vol=kind==="student"?0.16:0.20;
+    const ring=Math.max(0.7,1.9-freq/900);
+    const mk=(f,amp,dec)=>{
+      const o=audioCtx.createOscillator(); o.type="sine"; o.frequency.value=f;
+      const g=audioCtx.createGain();
+      g.gain.setValueAtTime(0,now);
+      g.gain.linearRampToValueAtTime(vol*amp,now+0.001);
+      g.gain.exponentialRampToValueAtTime(0.0001,now+dec);
+      o.connect(g).connect(master); o.start(now); o.stop(now+dec+0.05);
+    };
+    mk(freq,1,ring); mk(freq*2,.38,ring*.55); mk(freq*3,.10,.12);
+    const cl=Math.ceil(audioCtx.sampleRate*0.012);
+    const buf=audioCtx.createBuffer(1,cl,audioCtx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<cl;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/cl,2);
+    const ns=audioCtx.createBufferSource(); ns.buffer=buf;
+    const hp=audioCtx.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=freq*3;
+    const ng=audioCtx.createGain();
+    ng.gain.setValueAtTime(vol*.10,now);
+    ng.gain.exponentialRampToValueAtTime(0.0001,now+.012);
+    ns.connect(hp).connect(ng).connect(master); ns.start(now);
+  }
+
+  /* ═══ GUIA SONORO — melodia suave de fundo, timbre de piano/glockenspiel ═══
+     Toca a melodia completa continuamente em segundo plano, como no vídeo Boomwhackers.
+     Os alunos ouvem a música e acompanham com os sinos por cima. */
+
+  let guideTimers = [];
+  let guideGain = null;
+
+  function ensureGuide(){
+    ensureAudio();
+    if(!guideGain){
+      guideGain = audioCtx.createGain();
+      guideGain.gain.value = +guideVolSel.value;
+      guideGain.connect(master);
+    }
+    guideGain.gain.value = +guideVolSel.value;
+  }
+
+  // Agenda a melodia usando o Web Audio clock (audioCtx.currentTime) —
+  // precisão de sample, imune a deriva de setTimeout e ao delay da contagem regressiva.
+  function scheduleGuide(seq, step){
+    guideTimers.forEach(t => clearTimeout(t));
+    guideTimers = [];
+    if(+guideVolSel.value === 0) return;
+    ensureGuide();
+
+    const audioAnchor = audioCtx.currentTime + 0.900; // +900ms = mesmo offset dos eventos visuais
+    const stepSec = step / 1000;
+
+    let _beat = 0; // acumulador de batidas
+    seq.forEach(item => {
+      const id  = Array.isArray(item) ? item[0] : item;
+      const dur = Array.isArray(item) ? item[1] : 1;
+      const when = audioAnchor + _beat * stepSec;
+      // Agendar directamente no Web Audio scheduler — precisão de sample
+      scheduleGuideNote(ID2[id].freq, when);
+      _beat += dur;
+    });
+  }
+
+  function scheduleGuideNote(freq, when){
+    if(!guideGain) return;
+    const vol = +guideVolSel.value;
+    if(vol === 0) return;
+    const decay = Math.max(0.5, 1.4 - freq / 1400);
+
+    const o1 = audioCtx.createOscillator(); o1.type = "sine"; o1.frequency.value = freq;
+    const g1 = audioCtx.createGain();
+    g1.gain.setValueAtTime(0.0001, when);
+    g1.gain.linearRampToValueAtTime(0.7, when + 0.004);
+    g1.gain.exponentialRampToValueAtTime(0.0001, when + decay);
+    o1.connect(g1); g1.connect(guideGain);
+    o1.start(when); o1.stop(when + decay + 0.05);
+
+    const o2 = audioCtx.createOscillator(); o2.type = "sine"; o2.frequency.value = freq * 2;
+    const g2 = audioCtx.createGain();
+    g2.gain.setValueAtTime(0.0001, when);
+    g2.gain.linearRampToValueAtTime(0.18, when + 0.004);
+    g2.gain.exponentialRampToValueAtTime(0.0001, when + decay * 0.5);
+    o2.connect(g2); g2.connect(guideGain);
+    o2.start(when); o2.stop(when + decay * 0.5 + 0.05);
+
+    const o3 = audioCtx.createOscillator(); o3.type = "sine"; o3.frequency.value = freq * 3;
+    const g3 = audioCtx.createGain();
+    g3.gain.setValueAtTime(0.0001, when);
+    g3.gain.linearRampToValueAtTime(0.05, when + 0.004);
+    g3.gain.exponentialRampToValueAtTime(0.0001, when + decay * 0.25);
+    o3.connect(g3); g3.connect(guideGain);
+    o3.start(when); o3.stop(when + decay * 0.25 + 0.05);
+  }
+
+  function stopGuide(){
+    guideTimers.forEach(t => clearTimeout(t));
+    guideTimers = [];
+    // Desligar o nó gain — todos os osciladores agendados ficam sem destino
+    // e são silenciados imediatamente, mesmo os futuros.
+    if(guideGain && audioCtx){
+      try {
+        guideGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        guideGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        guideGain.disconnect();
+      } catch(e) {}
+      guideGain = null; // forçar recriação na próxima música
+    }
+  }
+
+  function stopAccomp(){ stopGuide(); }
+
+
+  let danceT=null;
+  function dance(ms=5000){
+    mascote.classList.remove("sad","happy");
+    mascote.classList.add("dancing");
+    if(danceT) clearTimeout(danceT);
+    danceT=setTimeout(()=>mascote.classList.remove("dancing"),ms);
+  }
+  function mascoteHappy(){
+    mascote.classList.remove("dancing","sad");
+    mascote.classList.add("happy");
+    setTimeout(()=>mascote.classList.remove("happy"),1400);
+  }
+  function mascoteSad(){
+    mascote.classList.remove("dancing","happy");
+    mascote.classList.add("sad");
+    setTimeout(()=>mascote.classList.remove("sad"),600);
+  }
+
+  /* ═══ Scoring ═══ */
+  let score=0, streak=0, maxStreak=0, hits=0, misses=0;
+
+  function resetScore(){
+    score=streak=maxStreak=hits=misses=0;
+    scoreVal.textContent="0";
+    streakVal.textContent="0";
+    maxStreakVal.textContent="0";
+    accuracyVal.textContent="—";
+  }
+  function addScore(good, noteEl, bellEl, laneId, timingMs){
+    const hl=hitLines[laneId];
+    if(good){
+      hits++;
+      streak++;
+      if(streak>maxStreak) maxStreak=streak;
+      const bonus=streak>=10?3:streak>=5?2:streak>=3?1.5:1;
+      const pts=Math.round(100*bonus);
+      score+=pts;
+      scoreVal.textContent=score;
+      streakVal.textContent=streak;
+      maxStreakVal.textContent=maxStreak;
+      if(noteEl){ noteEl.classList.add("hit-good"); }
+      if(hl){ hl.classList.add("flash-good"); setTimeout(()=>hl.classList.remove("flash-good"),300); }
+      bellEl.classList.add("hit-good-cell"); setTimeout(()=>bellEl.classList.remove("hit-good-cell"),250);
+      spawnParticles(bellEl, ID2[laneId].color);
+      // Timing label
+      const absT = typeof timingMs === "number" ? Math.abs(timingMs) : HIT_WINDOW;
+      const timingLabel = absT < 60 ? "⭐ Perfeito!" : absT < 130 ? "👍 Bom!" : absT < 200 ? "⚡ Cedo" : "🐌 Tarde";
+      const timingColor = absT < 60 ? "#ffd700" : absT < 130 ? "#4ade80" : "#fb923c";
+      showTimingPop(bellEl, timingLabel, timingColor);
+      // Combo pop
+      if(streak>=3) showComboPop(bellEl, streak, pts, bonus);
+      else showToast(`✅ +${pts}`, "good");
+      mascoteHappy();
+      // Challenge: count hits for level up
+      if(getMode()==="challenge") challengeOnHit();
+    } else {
+      misses++;
+      streak=0;
+      streakVal.textContent="0";
+      if(noteEl){ noteEl.classList.add("hit-bad"); }
+      if(hl){ hl.classList.add("flash-bad"); setTimeout(()=>hl.classList.remove("flash-bad"),300); }
+      bellEl.classList.add("hit-bad-cell"); setTimeout(()=>bellEl.classList.remove("hit-bad-cell"),250);
+      showToast("❌ Errou!", "bad");
+      mascoteSad();
+    }
+    const total=hits+misses;
+    if(total>0) accuracyVal.textContent=`${Math.round(hits/total*100)}%`;
+    pulseCard(scoreVal.closest(".score-card"));
+  }
+
+  /* ═══ Combo Pop ═══ */
+  function showComboPop(el, streak, pts, multi){
+    const rect = el.getBoundingClientRect();
+    const pop = document.createElement("div");
+    pop.className = "combo-pop";
+    const size = Math.min(28 + streak*1.5, 42);
+    const color = multi>=3?"#ff5f7e":multi>=2?"#ffd700":"#4ade80";
+    pop.style.cssText = `left:${rect.left+rect.width/2}px;top:${rect.top-10}px;font-size:${size}px;color:${color};transform:translateX(-50%)`;
+    pop.textContent = multi>=2 ? `${streak}x COMBO! 🔥 +${pts}` : `🔥 ${streak}x +${pts}`;
+    document.body.appendChild(pop);
+    setTimeout(()=>pop.remove(), 800);
+    showToast(`🔥 ${streak}x Combo!`, "good");
+  }
+
+  /* ═══ Timing Pop ═══ */
+  function showTimingPop(el, label, color){
+    const rect = el.getBoundingClientRect();
+    const pop = document.createElement("div");
+    pop.className = "timing-pop";
+    pop.style.cssText = `left:${rect.left+rect.width/2}px;top:${rect.top+20}px;color:${color};background:${color}22;transform:translateX(-50%)`;
+    pop.textContent = label;
+    document.body.appendChild(pop);
+    setTimeout(()=>pop.remove(), 620);
+  }
+  function pulseCard(el){
+    el.classList.remove("pulse");
+    void el.offsetWidth;
+    el.classList.add("pulse");
+    setTimeout(()=>el.classList.remove("pulse"),400);
+  }
+
+  /* ═══ Toast ═══ */
+  let toastT=null;
+  function showToast(msg, type){
+    toast.textContent=msg;
+    toast.className="feedback-toast show "+type;
+    if(toastT) clearTimeout(toastT);
+    toastT=setTimeout(()=>{ toast.className="feedback-toast"; },800);
+  }
+
+  /* ═══ Particles ═══ */
+  function spawnParticles(el, color){
+    const rect=el.getBoundingClientRect();
+    const cx=rect.left+rect.width/2;
+    const cy=rect.top+rect.height/2;
+    for(let i=0;i<12;i++){
+      const p=document.createElement("div"); p.className="particle";
+      const angle=Math.random()*Math.PI*2;
+      const dist=50+Math.random()*70;
+      p.style.cssText=`
+        left:${cx}px; top:${cy}px;
+        width:${6+Math.random()*6}px; height:${6+Math.random()*6}px;
+        background:${color};
+        --tx:${Math.cos(angle)*dist}px; --ty:${Math.sin(angle)*dist-60}px;
+        --dur:${0.5+Math.random()*0.4}s;
+        box-shadow:0 0 6px ${color};
+      `;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),900);
+    }
+  }
+
+  /* ═══ Next-Note Display ═══ */
+  const LOOKAHEAD = 6; // how many upcoming notes to show
+  let lastNoteIdx = -1;
+  function updateNextNotes(events, currentTime){
+    // Find the next unplayed event index
+    let nextIdx = 0;
+    for(let i=0;i<events.length;i++){
+      if(!events[i].played && !events[i].playerHit && !events[i].missed){
+        if(currentTime < events[i].hit + 100){ nextIdx = i; break; }
+      }
+      nextIdx = i + 1;
+    }
+    if(nextIdx === lastNoteIdx) return;
+    lastNoteIdx = nextIdx;
+    nextNotePips.innerHTML = "";
+
+    // Highlight the lane of the very next note
+    const nextNoteId = nextIdx < events.length ? events[nextIdx].id : null;
+    highlightNextLane(nextNoteId);
+
+    for(let i=nextIdx; i<Math.min(nextIdx+LOOKAHEAD, events.length); i++){
+      const n = ID2[events[i].id];
+      const pip = document.createElement("div");
+      pip.className = "next-note-pip" + (i===nextIdx?" current":"") + (i>nextIdx+3?" faded":"");
+      pip.style.background = n.color;
+      pip.style.boxShadow = i===nextIdx ? `0 0 14px 3px ${n.color}55, 0 2px 8px rgba(0,0,0,0.4)` : "";
+      pip.title = n.name;
+      pip.textContent = n.name;
+      nextNotePips.appendChild(pip);
+    }
+  }
+
+  /* ═══ Game engine ═══ */
+  let events=[], raf=null, startTime=0, stopping=false, paused=false, pausedAt=0;
+  const HIT_WINDOW=280; // ms window for interactive hit detection
+
+  function getMode(){ return modeSelect.value; }
+
+  /* ═══ Challenge Mode State ═══ */
+  let challengeLevel=1, challengeHits=0, challengeStep=840;
+  const CHALLENGE_HITS_PER_LEVEL=8;
+  const CHALLENGE_MIN_STEP=380;
+
+  function challengeOnHit(){
+    challengeHits++;
+    const needed = CHALLENGE_HITS_PER_LEVEL;
+    const left = needed - (challengeHits % needed);
+    challengeHitsLeft.textContent = `${left} acertos para subir`;
+    challengeFill.style.width = `${Math.min(100, ((challengeHits % needed)/needed)*100)}%`;
+    if(challengeHits % needed === 0){
+      challengeLevel++;
+      challengeLvl.textContent = challengeLevel;
+      // Speed up: reduce step
+      challengeStep = Math.max(CHALLENGE_MIN_STEP, challengeStep - 70);
+      showToast(`🚀 Nível ${challengeLevel}! Mais rápido!`, "good");
+      // Accelerate existing events timing
+      const now = performance.now()-startTime;
+      events.forEach(e=>{
+        if(!e.playerHit && !e.missed && e.hit>now){
+          const remaining = e.hit - now;
+          e.hit = now + remaining * 0.88;
+          e.spawn = e.hit - +leadSel.value;
+        }
+      });
+    }
+  }
+
+  /* ═══ NEXT LANE HIGHLIGHT ═══ */
+  let _highlightedLane = null;
+  function highlightNextLane(noteId){
+    if(_highlightedLane === noteId) return;
+    // Remove previous
+    if(_highlightedLane && laneCols[_highlightedLane]){
+      laneCols[_highlightedLane].classList.remove("next-active");
+    }
+    _highlightedLane = noteId;
+    if(noteId && laneCols[noteId]){
+      laneCols[noteId].classList.add("next-active");
+    }
+  }
+  function clearLaneHighlight(){
+    if(_highlightedLane && laneCols[_highlightedLane]){
+      laneCols[_highlightedLane].classList.remove("next-active");
+    }
+    _highlightedLane = null;
+  }
+
+  /* ═══ COUNTDOWN ═══ */
+  const countdownOverlay = document.getElementById("countdownOverlay");
+  const countdownNum     = document.getElementById("countdownNum");
+  const countdownLabel   = document.getElementById("countdownLabel");
+  const cdDots           = [document.getElementById("cdDot0"),document.getElementById("cdDot1"),document.getElementById("cdDot2")];
+
+  function showCountdown(callback){
+    countdownOverlay.classList.add("show");
+    let count = 3;
+    const labels = ["Prepara-te!","Quase...","Já!"];
+
+    // Metronome click sound
+    function clickSound(){
+      ensureAudio();
+      const now = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      o.type = "sine"; o.frequency.value = 880;
+      const g = audioCtx.createGain();
+      g.gain.setValueAtTime(0.18, now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.09);
+      o.connect(g).connect(master); o.start(now); o.stop(now+0.1);
+    }
+
+    function tick(){
+      // Animate number change
+      countdownNum.style.animation = "none";
+      void countdownNum.offsetWidth;
+      countdownNum.style.animation = "cdNum .85s ease-out";
+
+      countdownNum.textContent = count;
+      countdownLabel.textContent = labels[3-count] || "Prepara-te!";
+
+      // Light up dots
+      cdDots.forEach((d,i) => d.classList.toggle("active", i < (4-count)));
+      clickSound();
+
+      if(count > 1){
+        count--;
+        setTimeout(tick, 900);
+      } else {
+        // GO!
+        setTimeout(()=>{
+          countdownNum.style.animation = "none";
+          void countdownNum.offsetWidth;
+          countdownNum.style.animation = "cdNum .5s ease-out";
+          countdownNum.textContent = "🔔";
+          countdownLabel.textContent = "Toca!";
+          cdDots.forEach(d => d.classList.add("active"));
+          // Higher pitch click for GO
+          ensureAudio();
+          const now2 = audioCtx.currentTime;
+          const o2 = audioCtx.createOscillator();
+          o2.type = "sine"; o2.frequency.value = 1320;
+          const g2 = audioCtx.createGain();
+          g2.gain.setValueAtTime(0.22, now2);
+          g2.gain.exponentialRampToValueAtTime(0.0001, now2+0.15);
+          o2.connect(g2).connect(master); o2.start(now2); o2.stop(now2+0.16);
+          setTimeout(()=>{
+            countdownOverlay.classList.remove("show");
+            cdDots.forEach(d => d.classList.remove("active"));
+            callback();
+          }, 600);
+        }, 900);
+      }
+    }
+    tick();
+  }
+
+  function togglePause(){
+    if(!raf && !paused) return; // nada a pausar
+    if(!paused){
+      // → PAUSAR
+      paused = true;
+      pausedAt = performance.now() - startTime; // tempo decorrido em ms
+      cancelAnimationFrame(raf); raf = null;
+      audioCtx.suspend();                        // pausa o relógio Web Audio
+      pauseBtn.textContent = "▶ Continuar";
+      pauseBtn.classList.add("active");
+      // congelar blocos na posição actual
+      document.querySelectorAll(".noteBlock").forEach(b => b.style.transition = "none");
+    } else {
+      // → RETOMAR
+      paused = false;
+      audioCtx.resume();                         // retoma o relógio Web Audio (os nós retomam exactamente onde ficaram)
+      startTime = performance.now() - pausedAt;  // ajustar âncora do visual
+      pauseBtn.textContent = "⏸ Pausa";
+      pauseBtn.classList.remove("active");
+      raf = requestAnimationFrame(loop);
+    }
+  }
+
+  function play(){
+    stopping=false;
+    mascote.classList.remove("dancing","sad","happy");
+    events=[];
+    document.querySelectorAll(".noteBlock").forEach(n=>n.remove());
+    resetScore();
+    progressBar.style.width="0%";
+    resultOverlay.classList.remove("show");
+    nextNotePips.innerHTML = ""; lastNoteIdx = -1;
+    repeatPanel.classList.remove("active");
+    challengeBar.classList.remove("active");
+    clearLaneHighlight();
+
+    paused = false; pausedAt = 0;
+    pauseBtn.textContent = "⏸ Pausa";
+    pauseBtn.classList.remove("active");
+    pauseBtn.disabled = true;
+
+    const mode = getMode();
+    if(mode==="repeat"){ startRepeatMode(); return; }
+
+    playBtn.disabled=true; pauseBtn.disabled=false; stopBtn.disabled=false;
+
+    showCountdown(()=>{
+      _startPlay(mode);
+    });
+  }
+
+  function _startPlay(mode){
+    const song=SONGS[parseInt(songSel.value)||0];
+    const seq=song.seq;
+
+    // Se a música tem BPM definido, calcular o step base a partir dele
+    // e aplicar o factor de velocidade do selector (1300ms=0.65x, 1050=0.8x, 840=1x, 660=1.27x, 520=1.6x)
+    const baseStep = song.bpm ? Math.round(60000 / song.bpm) : +tempoSel.value;
+    const tempoFactor = +tempoSel.value / 840; // 840 = velocidade "Normal"
+    const songStep = Math.round(baseStep * tempoFactor);
+
+    let step;
+    if(mode==="challenge"){
+      challengeLevel=1; challengeHits=0; challengeStep=songStep;
+      challengeLvl.textContent="1";
+      challengeFill.style.width="0%";
+      challengeHitsLeft.textContent=`${CHALLENGE_HITS_PER_LEVEL} acertos para subir`;
+      challengeBar.classList.add("active");
+      step = challengeStep;
+    } else {
+      step = songStep;
+    }
+
+    const lead=+leadSel.value;
+
+    // Acumulador em batidas (float) para evitar deriva por arredondamento
+    let _beat = 0;
+    events = seq.map(item => {
+      const id  = Array.isArray(item) ? item[0] : item;
+      const dur = Array.isArray(item) ? item[1] : 1;
+      const hitMs = 900 + _beat * step;
+      const ev  = { id, dur, hit: hitMs, spawn: hitMs - lead, el:null, played:false, playerHit:false, missed:false };
+      _beat += dur;
+      return ev;
+    });
+
+    startTime=performance.now();
+    scheduleGuide(seq, step);
+    raf=requestAnimationFrame(loop);
+  }
+
+  function loop(t){
+    if(stopping || paused) return;
+    const time=t-startTime;
+    const totalDuration=events[events.length-1].hit+1000;
+    progressBar.style.width=Math.min(100,time/totalDuration*100)+"%";
+
+    updateNextNotes(events, time);
+
+    const isInteractive = (getMode()==="play" || getMode()==="challenge");
+
+    for(const e of events){
+      const dz=dropZones[e.id];
+      const dzH=dz.clientHeight;
+      const startTop=-88;
+      const endY=dzH;
+
+      if(!e.el && time>=e.spawn){
+        const n=ID2[e.id];
+        const b=document.createElement("div");
+        b.className="noteBlock";
+        const _bh=Math.max(40,Math.min(60,dzH/9));
+        const bh=Math.round(_bh * Math.min(e.dur, 3));
+        b.style.cssText=`background:${n.color};height:${bh}px;top:${startTop}px;box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -3px 0 ${n.dark}`;
+        b.innerHTML=`<span>${n.name}</span>`;
+        dz.appendChild(b);
+        e.el=b;
+      }
+
+      if(e.el){
+        const p=(time-e.spawn)/(e.hit-e.spawn);
+        e.el.style.top=(startTop+p*(endY-startTop))+"px";
+
+        /* Auto-play mode: play bell at hit time */
+        if(getMode()==="listen" && !e.played && time>=e.hit){
+          playBell(ID2[e.id].freq,"song");
+          ringBell(bellCells[e.id]);
+          e.played=true;
+        }
+
+        /* Interactive: missed note */
+        if(isInteractive && !e.playerHit && !e.missed && time>e.hit+HIT_WINDOW){
+          e.missed=true;
+          addScore(false, e.el, bellCells[e.id], e.id, null);
+        }
+
+        if(p>1.35){ e.el.remove(); e.el=null; }
+      }
+    }
+
+    const last=events[events.length-1];
+    if(last && time<last.hit+2800) raf=requestAnimationFrame(loop);
+    else stop(true);
+  }
+
+  /* ═══ Player input ═══ */
+  function handlePlayerInput(noteId, bellEl){
+    playBell(ID2[noteId].freq,"student");
+    ringBell(bellEl);
+
+    const mode = getMode();
+    if(mode==="listen") return; // just play sound
+    if(mode==="repeat"){ repeatHandleInput(noteId, bellEl); return; }
+
+    // find nearest unhit event for this note within window
+    const time=performance.now()-startTime;
+    let best=null, bestDist=Infinity;
+    for(const e of events){
+      if(e.id!==noteId) continue;
+      if(e.playerHit || e.missed) continue;
+      const dist=Math.abs(time-e.hit);
+      if(dist<bestDist){ bestDist=dist; best=e; }
+    }
+
+    if(best && bestDist<=HIT_WINDOW){
+      best.playerHit=true;
+      const timingOffset = (performance.now()-startTime) - best.hit;
+      addScore(true, best.el, bellEl, noteId, timingOffset);
+      if(!best.played){ best.played=true; }
+    } else {
+      /* Wrong note or too early — small penalty only if song is running */
+      if(events.length>0 && raf){
+        addScore(false, null, bellEl, noteId, null);
+      }
+    }
+  }
+
+  /* ═══ REPEAT MODE ═══ */
+  let repeatSeqList=[], repeatPos=0, repeatRoundNum=1, repeatLength=3, repeatPlaying=false;
+
+  function startRepeatMode(){
+    repeatPanel.classList.add("active");
+    playBtn.disabled=true; stopBtn.disabled=false;
+    repeatRoundNum=1; repeatLength=3;
+    nextRepeatRound();
+  }
+
+  function nextRepeatRound(){
+    repeatPos=0; repeatPlaying=true;
+    // Generate random sequence of repeatLength notes
+    repeatSeqList=[];
+    for(let i=0;i<repeatLength;i++){
+      repeatSeqList.push(NOTES[Math.floor(Math.random()*NOTES.length)].id);
+    }
+    repeatRound.textContent=`Ronda ${repeatRoundNum} — Sequência de ${repeatLength}`;
+    repeatStatus.textContent="🎵 Ouve com atenção...";
+    renderRepeatPips(false);
+    // Play the sequence with delays
+    let delay=600;
+    repeatSeqList.forEach((id,i)=>{
+      setTimeout(()=>{
+        if(repeatPlaying){
+          playBell(ID2[id].freq,"song");
+          ringBell(bellCells[id]);
+          // highlight pip
+          const pip=repeatSeq.children[i];
+          if(pip){ pip.style.transform="scale(1.3)"; setTimeout(()=>pip.style.transform="",300); }
+        }
+      }, delay);
+      delay+=550;
+    });
+    setTimeout(()=>{
+      if(repeatPlaying){
+        repeatStatus.textContent="👆 A tua vez! Toca as notas na mesma ordem.";
+        repeatPos=0;
+      }
+    }, delay+200);
+  }
+
+  function renderRepeatPips(showColors){
+    repeatSeq.innerHTML="";
+    repeatSeqList.forEach((id,i)=>{
+      const pip=document.createElement("div");
+      pip.className="repeat-pip";
+      if(showColors || i<repeatPos){
+        pip.style.background=ID2[id].color;
+        pip.textContent=ID2[id].name;
+      } else {
+        pip.style.background="rgba(255,255,255,0.12)";
+        pip.textContent="?";
+      }
+      repeatSeq.appendChild(pip);
+    });
+  }
+
+  function repeatHandleInput(noteId, bellEl){
+    if(!repeatPlaying || repeatPos >= repeatSeqList.length) return;
+    const expected=repeatSeqList[repeatPos];
+    renderRepeatPips(true);
+    if(noteId===expected){
+      const pip=repeatSeq.children[repeatPos];
+      if(pip) pip.classList.add("done");
+      repeatPos++;
+      hits++;
+      score+=100;
+      scoreVal.textContent=score;
+      showTimingPop(bellEl,"✅","#4ade80");
+      if(repeatPos>=repeatSeqList.length){
+        // Round complete!
+        repeatStatus.textContent=`🎉 Correto! Próxima ronda...`;
+        mascoteHappy();
+        dance(1500);
+        repeatRoundNum++;
+        if(repeatRoundNum % 2===0) repeatLength=Math.min(repeatLength+1,8);
+        setTimeout(()=>{ if(repeatPlaying) nextRepeatRound(); }, 1600);
+      }
+    } else {
+      const pip=repeatSeq.children[repeatPos];
+      if(pip) pip.classList.add("wrong");
+      misses++;
+      mascoteSad();
+      repeatStatus.textContent=`❌ Errado! Era ${ID2[expected].name}. A repetir...`;
+      setTimeout(()=>{
+        if(repeatPlaying){ renderRepeatPips(false); nextRepeatRound(); }
+      }, 1500);
+    }
+    const total=hits+misses;
+    if(total>0) accuracyVal.textContent=`${Math.round(hits/total*100)}%`;
+  }
+
+  function stopRepeatMode(){
+    repeatPlaying=false;
+    repeatPanel.classList.remove("active");
+  }
+
+  function stop(natural=false){
+    const mode=getMode();
+    if(mode==="repeat"){ stopRepeatMode(); playBtn.disabled=false; pauseBtn.disabled=true; stopBtn.disabled=true; return; }
+    // Cancelar o loop imediatamente — antes de qualquer outra coisa
+    stopping=true;
+    cancelAnimationFrame(raf); raf=null;
+    paused=false; pausedAt=0;
+    // Retomar o audioCtx se estava suspenso (pausa), para poder parar o guia
+    if(audioCtx && audioCtx.state==="suspended") audioCtx.resume();
+    stopAccomp();
+    pauseBtn.textContent="⏸ Pausa"; pauseBtn.classList.remove("active"); pauseBtn.disabled=true;
+    playBtn.disabled=false; stopBtn.disabled=true;
+    document.querySelectorAll(".noteBlock").forEach(n=>n.remove());
+    progressBar.style.width=natural?"100%":"0%";
+    nextNotePips.innerHTML=""; lastNoteIdx=-1;
+    clearLaneHighlight();
+    challengeBar.classList.remove("active");
+    if(natural){
+      dance(6000);
+      if(mode==="play"||mode==="challenge") setTimeout(()=>showResult(),600);
+    }
+    setTimeout(()=>{ stopping=false; },60);
+  }
+
+  /* ═══ Result screen ═══ */
+  function showResult(){
+    const total=hits+misses;
+    const acc=total>0?Math.round(hits/total*100):0;
+    const songName = SONGS[parseInt(songSel.value)||0].title;
+    document.getElementById("resultScore").textContent=score;
+    document.getElementById("resHits").textContent=hits;
+    document.getElementById("resMisses").textContent=misses;
+    document.getElementById("resAccuracy").textContent=acc+"%";
+    document.getElementById("resMaxStreak").textContent=maxStreak;
+
+    let stars="⭐⭐⭐";
+    let title="Parabéns! 🎉";
+    if(acc>=90){ stars="⭐⭐⭐"; title="Incrível! 🏆"; }
+    else if(acc>=70){ stars="⭐⭐"; title="Muito Bem! 🎉"; }
+    else if(acc>=50){ stars="⭐"; title="Boa tentativa! 💪"; }
+    else { stars="🔔"; title="Continua a treinar! 🎵"; }
+
+    // Challenge level achieved
+    if(getMode()==="challenge" && challengeLevel>1){
+      title = `Nível ${challengeLevel} atingido! 🚀`;
+    }
+
+    document.getElementById("resultTitle").textContent=title;
+    document.getElementById("resultStars").textContent=stars;
+    // Show song name in result box
+    let songDiv = document.getElementById("resSongName");
+    if(!songDiv){
+      songDiv=document.createElement("div");
+      songDiv.id="resSongName";
+      songDiv.style.cssText="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;font-family:'Nunito',sans-serif;";
+      document.querySelector(".result-box h2").after(songDiv);
+    }
+    songDiv.textContent=songName;
+    resultOverlay.classList.add("show");
+  }
+
+  playBtn.onclick=play;
+  pauseBtn.onclick=togglePause;
+  stopBtn.onclick=()=>stop(false);
+  playAgainBtn.onclick=()=>{ resultOverlay.classList.remove("show"); play(); };
+
+  window.addEventListener("keydown",e=>{
+    if(e.code==="Space" && !e.target.matches("button,select,input")){
+      e.preventDefault();
+      togglePause();
+      return;
+    }
+    const k=(e.key||"").toLowerCase();
+    if(k in KEY2ID){
+      const id=KEY2ID[k];
+      handlePlayerInput(id, bellCells[id]);
+    }
+  });
+
+  /* ═══ Touch device detection ═══ */
+  function detectTouch(){
+    if('ontouchstart' in window || navigator.maxTouchPoints > 0){
+      document.body.classList.add("is-touch");
+    }
+  }
+  detectTouch();
+
+  /* Prevent page scroll when tapping bells on mobile */
+  gameArea.addEventListener("touchstart", e=>{
+    if(e.target.closest(".bell-cell")) e.preventDefault();
+  }, { passive:false });
+
+})();
+</script>
+<div class="vb-signature">© Professora Vanda Várzea</div>
+</body>
+</html>
