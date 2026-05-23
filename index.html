@@ -290,21 +290,32 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 .hitline{
   position:absolute; left:0; right:0; bottom:0;
-  height:3px;
-  background:rgba(255,255,255,0.6);
-  box-shadow:0 0 12px rgba(255,255,255,0.9), 0 0 28px rgba(200,220,255,0.5);
+  height:5px;
+  background:rgba(255,255,255,0.85);
+  box-shadow:0 0 14px 3px rgba(255,255,255,0.7), 0 0 32px rgba(200,220,255,0.4);
   z-index:20; pointer-events:none;
+  border-radius:3px;
+}
+.hitline::before{
+  content:'▼ TOCA AQUI ▼';
+  position:absolute;
+  bottom:6px; left:50%; transform:translateX(-50%);
+  font-size:8px; font-family:'Fredoka One',sans-serif;
+  color:rgba(255,255,255,0.55);
+  white-space:nowrap;
+  letter-spacing:1px;
+  pointer-events:none;
 }
 /* hitline flash on hit */
 .hitline.flash-good{
   background:var(--green);
-  box-shadow:0 0 20px var(--green), 0 0 40px rgba(74,222,128,0.6);
-  animation:flashLine .3s ease-out;
+  box-shadow:0 0 24px 6px rgba(74,222,128,0.8), 0 0 48px rgba(74,222,128,0.4);
+  animation:flashLine .35s ease-out;
 }
 .hitline.flash-bad{
   background:var(--red);
-  box-shadow:0 0 20px var(--red);
-  animation:flashLine .3s ease-out;
+  box-shadow:0 0 24px 6px rgba(248,113,113,0.8);
+  animation:flashLine .35s ease-out;
 }
 @keyframes flashLine{
   0%{opacity:1} 100%{opacity:.6; height:3px;}
@@ -314,7 +325,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   position:absolute;
   left:6%; width:88%;
   border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
+  display:flex; flex-direction:row; align-items:center; justify-content:center; gap:3px;
   font-family:'Fredoka One',sans-serif;
   font-size:clamp(12px,1.8vw,20px);
   color:#fff;
@@ -325,6 +336,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   z-index:10; pointer-events:none;
   overflow:hidden;
 }
+.noteBlockName{ line-height:1; }
+.noteBlockSym{ display:flex; align-items:center; opacity:0.92; }
+.noteBlockSym svg{ filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
 .noteBlock::before{
   content:'';
   position:absolute; top:0; left:0; right:0; height:38%;
@@ -494,6 +508,16 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   box-shadow:0 6px 24px rgba(255,200,0,0.4);
 }
 .btn-play-again:active{ transform:scale(.96); }
+.btn-choose-song{
+  background:rgba(255,255,255,0.12);
+  color:#fff; border:2px solid rgba(255,255,255,0.3); border-radius:14px;
+  font-family:'Fredoka One',sans-serif; font-size:17px;
+  padding:10px 28px; cursor:pointer; margin-top:6px;
+  transition:transform .1s, background .15s;
+  display:block; width:100%;
+}
+.btn-choose-song:hover{ background:rgba(255,255,255,0.2); }
+.btn-choose-song:active{ transform:scale(.96); }
 
 .hint{
   text-align:center; margin-top:8px;
@@ -697,26 +721,34 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   }
   .bell-svg{ width:90%; }
 
-  /* Controls — single column on very small screens */
+  /* Controls — all in one scrollable row on mobile */
   .controls{
-    grid-template-columns:1fr;
-    gap:5px;
-    padding:5px 6px;
-  }
-  .ctrl-group{
-    display:grid;
-    grid-template-columns:auto 1fr;
-    align-items:center;
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
     gap:6px;
+    padding:5px 8px;
+    align-items:flex-end;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .controls::-webkit-scrollbar{ display:none; }
+  .ctrl-group{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    flex:0 0 auto;
+    min-width:90px;
   }
   .ctrl-group label{ white-space:nowrap; margin:0; }
   .btn-group{
-    grid-column:1/-1;
     display:flex;
-    gap:6px;
-    justify-content:stretch;
+    gap:5px;
+    flex:0 0 auto;
+    align-items:flex-end;
+    margin-left:4px;
   }
-  .btn{ font-size:13px; padding:8px 10px; min-height:40px; }
+  .btn{ font-size:12px; padding:7px 9px; min-height:38px; white-space:nowrap; }
 
   /* Scoreboard — 2×2 */
   .scoreboard{ gap:4px; }
@@ -975,6 +1007,7 @@ body.is-touch .touch-hint{ display:block; }
       </div>
     </div>
     <button class="btn-play-again" id="playAgainBtn">▶ Jogar Novamente</button>
+    <button class="btn-choose-song" id="chooseSongBtn">🎵 Escolher Música</button>
   </div>
 </div>
 
@@ -1127,14 +1160,14 @@ body.is-touch .touch-hint{ display:block; }
 <script>
 (() => {
   const NOTES = [
-    { id:"C",  name:"Dó",  freq:261.63, color:"#1b9e8a", dark:"#0d6b5e", key:"A" },
-    { id:"D",  name:"Ré",  freq:293.66, color:"#7b3fa0", dark:"#522878", key:"S" },
-    { id:"E",  name:"Mi",  freq:329.63, color:"#e0228c", dark:"#9e1560", key:"D" },
-    { id:"F",  name:"Fá",  freq:349.23, color:"#d42b2b", dark:"#941818", key:"F" },
-    { id:"G",  name:"Sol", freq:392.00, color:"#e07020", dark:"#9e4a0e", key:"G" },
-    { id:"A",  name:"Lá",  freq:440.00, color:"#c8b800", dark:"#8a7a00", key:"H" },
-    { id:"B",  name:"Si",  freq:493.88, color:"#4db848", dark:"#2e7a2a", key:"J" },
-    { id:"C2", name:"Dó↑", freq:523.25, color:"#30b8d4", dark:"#1a7e94", key:"K" },
+    { id:"C",  name:"Dó",  freq:261.63, color:"#e63946", dark:"#a01e28", key:"A" },
+    { id:"D",  name:"Ré",  freq:293.66, color:"#f4842d", dark:"#b05a14", key:"S" },
+    { id:"E",  name:"Mi",  freq:329.63, color:"#f7c948", dark:"#b08a10", key:"D" },
+    { id:"F",  name:"Fá",  freq:349.23, color:"#7bc950", dark:"#4a8a2a", key:"F" },
+    { id:"G",  name:"Sol", freq:392.00, color:"#1a7a35", dark:"#0f4d20", key:"G" },
+    { id:"A",  name:"Lá",  freq:440.00, color:"#8b3fc8", dark:"#5c2188", key:"H" },
+    { id:"B",  name:"Si",  freq:493.88, color:"#c2185b", dark:"#880d3e", key:"J" },
+    { id:"C2", name:"Dó↑", freq:523.25, color:"#e63946", dark:"#a01e28", key:"K" },
   ];
   const ID2    = Object.fromEntries(NOTES.map(n=>[n.id,n]));
   const KEY2ID = Object.fromEntries(NOTES.map(n=>[n.key.toLowerCase(),n.id]));
@@ -1215,26 +1248,24 @@ body.is-touch .touch-hint{ display:block; }
     {title:"🦈 Baby Shark",
      bpm:108,
      difficulty:1,
-     // Compasso 4/4 — pickup de 2 batidas (anacruse)
+     // Baby Shark: A A A A-C-E (em Lá) → transportado para Dó: E E E E-G-C2
+     // Os "doo" ficam em Mi, a frase sobe para Sol e Dó↑ só no fim
      seq:[
        // ── Baby Shark ──
-       ["D",0.5],["E",0.5],["G",1],             // Ba-by shark       (2 — pickup)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["D",0.5],["E",0.5],["G",2],["G",1],    // Ba-by shark doo~   (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["D",0.5],["E",0.5],["G",2],["G",1],    // Ba-by shark doo~   (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5], // doo doo doo doo   (2)
-       ["G",2],                                  // doo~              (2 = 4 ✓)
+       ["E",0.5],["E",0.5],["E",1],             // Ba-by shark    (2 pickup)
+       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
+       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
+       ["E",0.5],["E",0.5],["G",1],["C2",2],   // Ba-by shark doo~ (4✓)
        // ── Mommy Shark ──
-       ["D",0.5],["E",0.5],["G",1],             // Mom-my shark      (2 — pickup)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["D",0.5],["E",0.5],["G",2],["G",1],    // Mom-my shark doo~  (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4 ✓)
-       ["G",2],["G",2]                           // Mom-my shark!     (4 ✓)
+       ["E",0.5],["E",0.5],["E",1],            // Mom-my shark   (2 pickup)
+       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
+       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
+       ["E",0.5],["E",0.5],["G",1],["C2",2],  // Mom-my shark doo~ (4✓)
+       // ── Daddy Shark ──
+       ["G",0.5],["G",0.5],["G",1],            // Dad-dy shark   (2 pickup)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4✓)
+       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4✓)
+       ["G",0.5],["G",0.5],["A",1],["C2",2]   // Dad-dy shark doo~ (4✓)
      ]},
 
     /* ══════════════════════════════════════════════
@@ -1252,72 +1283,75 @@ body.is-touch .touch-hint{ display:block; }
        "E","F",["G",2],                          // dor-mez vous?     (4 ✓)
        ["G",0.5],["A",0.5],["G",0.5],["F",0.5],"E","C",   // son-nez les ma-ti-nes (4 ✓)
        ["G",0.5],["A",0.5],["G",0.5],["F",0.5],"E","C",   // son-nez les ma-ti-nes (4 ✓)
-       "C",["G",1],["C",2],                      // ding ding dong    (4 ✓)
-       "C",["G",1],["C",2]                       // ding ding dong    (4 ✓)
+       ["C",1],["G",1],["C",2],                  // ding ding dong    (4 ✓)
+       ["C",1],["G",1],["C",2]                   // ding ding dong    (4 ✓)
      ]},
 
     {title:"🌿 Alecrim",
      bpm:96,
      difficulty:2,
      theme:"forest",
-     // Compasso 2/4 — 2 batidas por compasso
+     // Versão portuguesa tradicional — começa em Sol: G G G E / G—
      seq:[
-       ["G",0.5],["G",0.5],["E",0.5],["E",0.5], // A-le-crim dou-   (2 ✓)
-       ["G",2],                                   // ra-do            (2 ✓)
-       ["A",0.5],["A",0.5],["G",0.5],["G",0.5], // que nas-ces no   (2 ✓)
-       ["E",2],                                   // cam-po           (2 ✓)
-       ["G",0.5],["G",0.5],["E",0.5],["E",0.5], // cres-ces nas a-  (2 ✓)
-       ["G",2],                                   // lei-vas          (2 ✓)
-       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // sem ser plan-ta- (2 ✓)
-       ["D",2],                                   // do               (2 ✓)
-       ["G",0.5],["G",0.5],["E",0.5],["E",0.5], // A-le-crim dou-   (2 ✓)
-       ["G",2],                                   // ra-do            (2 ✓)
-       ["A",0.5],["A",0.5],["G",0.5],["G",0.5], // que nas-ces no   (2 ✓)
-       ["E",2],                                   // cam-po           (2 ✓)
-       ["C",0.5],["D",0.5],["E",0.5],["F",0.5], // quem te plan-    (2 ✓)
-       ["G",2],                                   // tou              (2 ✓)
-       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // foi o meu a-     (2 ✓)
-       ["C",4]                                    // mor              (4 ✓ final)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // A-le-crim dou-   (2✓)
+       ["G",2],                                   // ra-do            (2✓)
+       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // que nas-ces no   (2✓)
+       ["E",2],                                   // cam-po           (2✓)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cres-ces nas a-  (2✓)
+       ["G",2],                                   // lei-vas          (2✓)
+       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // sem ser plan-ta- (2✓)
+       ["D",2],                                   // do               (2✓)
+       // Refrão: "Quem te plantou foi o meu amor"
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // A-le-crim dou-   (2✓)
+       ["G",2],                                   // ra-do            (2✓)
+       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // que nas-ces no   (2✓)
+       ["E",2],                                   // cam-po           (2✓)
+       ["C",0.5],["D",0.5],["E",0.5],["F",0.5], // quem te plan-    (2✓)
+       ["G",2],                                   // tou              (2✓)
+       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // foi o meu a-     (2✓)
+       ["C",4]                                    // mor              (4✓)
      ]},
 
     {title:"🎈 Cai Cai Balão",
      bpm:92,
      difficulty:2,
      theme:"sunset",
-     // Compasso 2/4 — 2 batidas por compasso
+     // Compasso 2/4 — versão tradicional portuguesa
+     // A melodia NÃO sobe de tom entre frases — mantém-se no mesmo nível
      seq:[
-       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // Cai cai ba-    (2 ✓)
-       ["G",2],                                   // lão            (2 ✓)
-       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // cai cai ba-    (2 ✓)
-       ["A",2],                                   // lão            (2 ✓)
-       ["C2",0.5],["C2",0.5],["B",0.5],["A",0.5],// cai a-qui na  (2 ✓)
-       ["G",0.5],["E",0.5],["C",1],              // mi-nha mão     (2 ✓)
-       ["G",1],["G",1],                           // não não        (2 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai cai ba-    (2 ✓)
-       ["G",2],                                   // lão            (2 ✓)
-       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // cai cai ba-    (2 ✓)
-       ["A",2],                                   // lão            (2 ✓)
-       ["C2",0.5],["B",0.5],["A",0.5],["G",0.5],// cai a-qui no   (2 ✓)
-       ["C",4]                                    // chão           (4 ✓ final)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // Cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai a-qui na   (2✓)
+       ["G",0.5],["F",0.5],["E",1],              // mi-nha mão     (2✓)
+       ["D",1],["D",1],                           // não não        (2✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["G",0.5],["F",0.5],["E",0.5],["D",0.5], // cai a-qui no   (2✓)
+       ["C",4]                                    // chão           (4✓)
      ]},
 
     {title:"🎂 Parabéns a Você",
      bpm:84,
      difficulty:2,
-     // Compasso 3/4 (valsa) — 3 batidas por compasso
-     // Pickup (anacruse): 1 batida antes do compasso 1
+     // Compasso 3/4 (valsa) — versão tradicional portuguesa/brasileira
+     // Pa-rá-béns a vo-cê / nes-ta da-ta que-ri-da / mui-tas fe-li-ci-da-des / e mui-tos a-nos de vi-da
      seq:[
-       ["G",0.5],["G",0.5],                     // [pickup] Pa-ra-      (1 ✓)
-       ["A",1],["G",1],["E",1],                 // béns a vo-cê  (3 ✓ — corrigido: E não C2)
-       ["B",3],                                  // ~~~           (3 ✓)
-       ["G",0.5],["G",0.5],                     // [pickup] Pa-ra-      (1 ✓)
-       ["A",1],["G",1],["D",1],                 // béns a vo-    (3 ✓)
-       ["C",3],                                  // cê            (3 ✓)
-       ["G",0.5],["G",0.5],                     // [pickup] Pa-ra-      (1 ✓)
-       ["G",1],["E",1],["C",1],                 // béns que-ri-  (3 ✓)
-       ["B",1],["A",2],                          // do a-mi-go    (3 ✓)
-       ["G",0.5],["G",0.5],["E",1],["C",1],    // pa-ra-béns a  (3 ✓)
-       ["D",1],["C",2]                           // vo-cê         (3 ✓)
+       ["G",0.5],["G",0.5],                      // Pa-ra-           (pickup)
+       ["A",1],["G",1],["C2",1],                  // béns a vo-       (3 ✓)
+       ["B",3],                                   // cê               (3 ✓)
+       ["G",0.5],["G",0.5],                       // Pa-ra-           (pickup)
+       ["A",1],["G",1],["D",1],                   // béns a vo-       (3 ✓)
+       ["C2",3],                                  // cê               (3 ✓)
+       ["G",0.5],["G",0.5],                       // Pa-ra-           (pickup)
+       ["G",1],["E",1],["C2",1],                  // béns que-ri-     (3 ✓)
+       ["B",1],["A",2],                           // do a-mi-         (3 ✓)
+       ["F",0.5],["F",0.5],                       // Pa-ra-           (pickup)
+       ["E",1],["C2",1],["B",1],                  // béns a vo-       (3 ✓)
+       ["D",2],["C2",1]                           // cê               (3 ✓)
      ]},
 
     {title:"🎵 Ode à Alegria — Beethoven",
@@ -1338,14 +1372,18 @@ body.is-touch .touch-hint{ display:block; }
     {title:"🐻 Os Ursinhos Carinhosos",
      bpm:96,
      difficulty:2,
-     // Compasso 4/4 — 4 batidas por compasso
+     // Compasso 4/4 — tema da série animada
      seq:[
-       "C","E","G","E",                          // U-rsi-nhos ca-  (4 ✓)
-       "C","E",["G",2],                          // ri-nho-sos      (4 ✓)
-       ["C2",2],["B",1],["G",1],                // sem-pre a brin- (4 ✓ — corrigido: G com duração explícita)
-       ["E",2],["G",2],                          // car sem-pre a-  (4 ✓)
-       "C","E","G","E",                          // U-rsi-nhos ca-  (4 ✓)
-       "C","D",["E",2]                           // ri-nho-sos!     (4 ✓)
+       // "Ursinhos carinhosos, sempre a brincar"
+       ["C",1],["E",1],["G",1],["E",1],          // U-rsi-nhos ca-   (4 ✓)
+       ["D",1],["F",1],["A",2],                   // ri-nho-sos       (4 ✓)
+       ["G",1],["E",1],["C",1],["D",1],          // sem-pre a brin-  (4 ✓)
+       ["C",4],                                   // car              (4 ✓)
+       // "cheios de amor, prontos a ajudar"
+       ["C",1],["E",1],["G",1],["E",1],          // che-ios de a-    (4 ✓)
+       ["D",1],["F",1],["A",2],                   // mor              (4 ✓)
+       ["G",1],["A",1],["G",1],["E",1],          // pron-tos a a-    (4 ✓)
+       ["C",4]                                    // ju-dar!          (4 ✓)
      ]},
 
     {title:"🐟 Se Eu Fosse um Peixinho",
@@ -1354,44 +1392,55 @@ body.is-touch .touch-hint{ display:block; }
      theme:"ocean",
      // Compasso 3/4
      seq:[
-       ["G",1.5],["G",0.5],["A",1],             // Se eu fos-se um  (3 ✓)
-       ["G",1.5],["E",1.5],                     // pei-xi-nho       (3 ✓)
-       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3 ✓)
-       ["C",3],                                  // dar              (3 ✓)
-       ["C",1.5],["C",0.5],["D",1],             // vi-nha ao fun-do (3 ✓)
-       ["E",1.5],["C",1.5],                     // do mar           (3 ✓)
-       ["G",2],["G",1],                          // bus-car-te       (3 ✓)
-       ["G",3],                                  // a ti             (3 ✓)
-       ["G",1.5],["G",0.5],["A",1],             // se eu fos-se um  (3 ✓)
-       ["G",1.5],["E",1.5],                     // pei-xi-nho       (3 ✓)
-       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3 ✓)
-       ["C",3],                                  // dar              (3 ✓)
-       ["C",1],["D",0.5],["E",1],["F",0.5],     // pe-ga-va-te à    (3 ✓)
-       ["G",1.5],["E",1.5],                     // cau-da           (3 ✓)
-       ["C",3]                                   // e cá!            (3 ✓)
+       ["G",1.5],["G",0.5],["A",1],             // Se eu fos-se um  (3✓)
+       ["G",1.5],["E",1.5],                      // pei-xi-nho       (3✓)
+       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3✓)
+       ["C",3],                                  // dar              (3✓)
+       ["C",1.5],["C",0.5],["D",1],             // vi-nha ao fun-do (3✓)
+       ["E",1.5],["C",1.5],                      // do mar           (3✓)
+       ["G",2],["G",1],                          // bus-car-te       (3✓)
+       ["G",3],                                  // a ti             (3✓)
+       ["G",1.5],["G",0.5],["A",1],             // se eu fos-se um  (3✓)
+       ["G",1.5],["E",1.5],                      // pei-xi-nho       (3✓)
+       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3✓)
+       ["C",3],                                  // dar              (3✓)
+       // "pegava-te à cauda e cá" — Dó Ré Mi Fá / Sol— Mi—
+       ["C",0.5],["D",0.5],["E",0.5],["F",0.5],["G",1], // pe-ga-va-te à   (3✓)
+       ["E",1.5],["C",1.5],                      // cau-da           (3✓)
+       ["C",3]                                   // e cá!            (3✓)
      ]},
 
     {title:"🎄 Noite Feliz",
      bpm:68,
      difficulty:2,
-     // Compasso 3/4 (valsa) — 3 batidas por compasso
+     // Compasso 3/4 (valsa) — 3 batidas por compasso, em Dó maior
      seq:[
+       // "Noite feliz" — Sol La Sol Mi
        ["G",1],["A",0.5],["G",1.5],             // Noi-te fe-    (3 ✓)
        ["E",3],                                  // liz           (3 ✓)
+       // "Noite feliz" — Sol La Sol Mi
        ["G",1],["A",0.5],["G",1.5],             // Noi-te fe-    (3 ✓)
        ["E",3],                                  // liz           (3 ✓)
+       // "Resplendece" — Ré Ré Si
        ["D",2],["D",1],                          // Res-plan-de-  (3 ✓)
        ["B",3],                                  // ce            (3 ✓)
+       // "A luz celestial" — Lá Lá Dó↑ Lá Sol
        ["A",2],["A",1],                          // A luz ce-     (3 ✓)
-       ["C2",3],                                 // les-tial      (3 ✓)
-       ["B",1.5],["A",0.5],["G",1],             // que a-nun-cia (3 ✓)
-       ["G",1],["D",0.5],["D",1.5],             // ao mun-do a   (3 ✓)
-       ["F",1],["E",0.5],["C",1.5],             // paz e o a-    (3 ✓)
-       ["G",1],["G",0.5],["G",1.5],             // mor sal-va-   (3 ✓)
-       ["E",1],["G",0.5],["G",1.5],             // dor Cris-to   (3 ✓)
-       ["A",3],                                  // nas-          (3 ✓)
-       ["G",1],["F",0.5],["E",1.5],             // ceu! Noi-te   (3 ✓)
-       ["C",3]                                   // fe-liz        (3 ✓)
+       ["C2",3],                                 // les-          (3 ✓)
+       ["A",1],["G",2],                          // ti-al         (3 ✓)
+       // "que anuncia ao mundo" — Si Si Ré Si Sol
+       ["B",1.5],["B",0.5],["D",1],             // que a-nun-cia (3 ✓)
+       ["B",1.5],["G",1.5],                      // ao mun-do     (3 ✓)
+       // "a paz e o amor" — Lá Lá Sol Fá Mi Dó
+       ["A",2],["G",1],                          // a paz         (3 ✓)
+       ["F",1.5],["E",1.5],                      // e o a-        (3 ✓)
+       ["C",3],                                  // mor           (3 ✓)
+       // "Salvador Cristo nasceu" — Sol Sol Lá Sol Mi
+       ["G",1],["G",0.5],["A",0.5],["G",1],     // Sal-va-dor Cris-(3 ✓)
+       ["E",3],                                  // to            (3 ✓)
+       // "nasceu — Noite feliz"
+       ["D",2],["D",1],                          // nas-ceu!      (3 ✓)
+       ["C",3]                                   // ~~~           (3 ✓)
      ]},
 
     /* ══════════════════════════════════════════════
@@ -1402,49 +1451,51 @@ body.is-touch .touch-hint{ display:block; }
      bpm:92,
      difficulty:3,
      theme:"forest",
-     // Compasso 2/4 — 2 batidas por compasso
+     // Compasso 2/4 — melodia tradicional portuguesa
      seq:[
-       ["E",0.5],["D",0.5],["C",0.5],["D",0.5], // Pa-pa-ga-io      (2 ✓)
-       ["E",2],                                   // loi-ro           (2 ✓)
-       ["E",0.5],["D",0.5],["C",0.5],["D",0.5], // do bi-co         (2 ✓)
-       ["C",2],                                   // dou-ra-do        (2 ✓)
-       ["C",0.5],["C",0.5],["C",1],              // do bi-co do      (2 ✓)
-       ["E",0.5],["D",0.5],["C",0.5],["D",0.5], // Pa-pa-ga-io      (2 ✓)
-       ["E",2],                                   // loi-ro           (2 ✓)
-       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // do bi-co dou-    (2 ✓)
-       ["C",2],                                   // ra-do            (2 ✓)
-       ["C",0.5],["C",0.5],["C",1],              // do bi-co do      (2 ✓)
-       ["G",0.5],["A",0.5],["G",0.5],["F",0.5], // quan-do é que    (2 ✓)
-       ["E",0.5],["D",0.5],["E",1],              // tu fa-las        (2 ✓)
-       ["G",0.5],["A",0.5],["G",0.5],["F",0.5], // pa-pa-ga-io      (2 ✓)
-       ["E",2],                                   // ~~~              (2 ✓)
-       ["E",0.5],["F",0.5],["E",0.5],["D",0.5], // eu sei que tu    (2 ✓)
-       ["C",0.5],["D",0.5],["E",1],              // sa-bes fa-lar    (2 ✓)
-       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // eu sei que tu    (2 ✓)
-       ["C",4]                                    // lar!             (4 ✓ final)
+       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // Pa-pa-ga-io      (2✓)
+       ["E",2],                                   // loi-ro           (2✓)
+       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // do bi-co         (2✓)
+       ["C",2],                                   // dou-ra-do        (2✓)
+       ["G",0.5],["G",0.5],["G",1],              // do bi-co do      (2✓)
+       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // bi-co dou-ra-    (2✓)
+       ["C",2],                                   // do               (2✓)
+       // "Quando é que tu falas"
+       ["G",0.5],["A",0.5],["G",0.5],["F",0.5], // quan-do é que    (2✓)
+       ["E",0.5],["D",0.5],["E",1],              // tu fa-las        (2✓)
+       ["G",0.5],["A",0.5],["G",0.5],["F",0.5], // pa-pa-ga-io      (2✓)
+       ["E",2],                                   // ~~~              (2✓)
+       // "Eu sei que tu sabes falar"
+       ["E",0.5],["F",0.5],["E",0.5],["D",0.5], // eu sei que tu    (2✓)
+       ["C",0.5],["D",0.5],["E",1],              // sa-bes fa-       (2✓)
+       ["G",0.5],["E",0.5],["D",0.5],["C",0.5], // lar pa-pa-ga-    (2✓)
+       ["C",4]                                    // io!              (4✓)
      ]},
 
     {title:"🎵 Lullaby de Brahms",
      bpm:72,
      difficulty:3,
-     // Compasso 3/4 (valsa) — 3 batidas por compasso
+     // Compasso 3/4 — transposto para Dó maior
+     // Original Sol: G G E G / G E / G A G F / E— / F E D C / E— / E G G / C2 B / D— B G
+     // Transposto Dó: C C A C / C A / C D C B / A— / B A G E / A— / A C C2 / E D / G— E C
      seq:[
-       ["G",1],["G",0.5],["E",1.5],             // Gu-ten A-bend   (3 ✓)
-       ["G",1],["E",2],                          // gut' Nacht       (3 ✓)
-       ["G",1],["A",0.5],["G",1.5],             // mit Ro-sen be-   (3 ✓)
-       ["F",0.5],["E",2.5],                      // deckt            (3 ✓)
-       ["F",1],["E",0.5],["D",1.5],             // mit Näg-lein be- (3 ✓)
-       ["C",3],                                  // steckt           (3 ✓)
-       ["E",1],["G",1],["G",1],                  // schlupf un-ter   (3 ✓)
-       ["C2",1.5],["B",1.5],                    // die De-ck        (3 ✓)
-       ["D",1.5],["D",0.5],["B",1],             // morgen früh      (3 ✓)
-       ["D",1],["B",1],["G",1],                  // wenn Gott will   (3 ✓)
-       ["D",1.5],["E",0.5],["D",1],             // wirst du wie-    (3 ✓)
-       ["C",1],["B",2],                          // der ge-weckt     (3 ✓)
-       ["G",1],["G",0.5],["E",1.5],             // Gu-ten A-bend   (3 ✓)
-       ["G",1],["E",2],                          // gut' Nacht       (3 ✓)
-       ["G",1],["A",0.5],["G",1.5],             // mit Ro-sen be-   (3 ✓)
-       ["F",0.5],["E",2.5]                         // deckt!           (3 ✓ final)
+       ["C",1],["C",0.5],["A",0.5],["C",1],     // Gu-ten A-bend    (3✓) C C A C
+       ["C",1],["A",2],                           // gut' Nacht        (3✓) C A—
+       ["C",1],["D",0.5],["C",0.5],["B",1],      // mit Ro-sen be-    (3✓) C D C B
+       ["A",3],                                   // deckt             (3✓) A—
+       ["B",1],["A",0.5],["G",0.5],["E",1],      // mit Näg-lein be-  (3✓) B A G E
+       ["A",3],                                   // steckt            (3✓) A—
+       ["A",1],["C2",1],["C2",1],                 // schlupf un-ter    (3✓) A C2 C2
+       ["E",1],["D",2],                           // die Deck          (3✓) E D—
+       ["G",2],["E",1],                           // mor-gen früh      (3✓) G— E
+       ["G",1],["E",1],["C",1],                   // wenn Gott will    (3✓) G E C
+       ["G",1],["A",0.5],["G",0.5],["E",1],      // wirst du wie-     (3✓) G A G E
+       ["D",3],                                   // der ge-weckt      (3✓) D—
+       // repetição
+       ["C",1],["C",0.5],["A",0.5],["C",1],      // Gu-ten A-bend    (3✓)
+       ["C",1],["A",2],                           // gut' Nacht        (3✓)
+       ["C",1],["D",0.5],["C",0.5],["B",1],      // mit Ro-sen be-    (3✓)
+       ["A",3]                                    // deckt!            (3✓)
      ]},
 
     {title:"🔔 Jingle Bells",
@@ -1452,22 +1503,24 @@ body.is-touch .touch-hint{ display:block; }
      difficulty:3,
      // Compasso 4/4 — 4 batidas por compasso
      seq:[
+       // Refrão
        "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
        "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
        "E","G","C","D",                          // Jin-gle all the  (4 ✓)
        ["E",4],                                  // wayyy            (4 ✓)
        "F","F","F","F",                          // Oh what fun it   (4 ✓)
-       ["F",1],["E",1],["E",1],["E",1],         // is to ride in    (4 ✓)
-       ["D",1],["D",1],["E",1],["D",1],         // a one-horse o-   (4 ✓)
-       ["G",2],["G",2],                          // pen sleigh — hey (4 ✓)
+       ["F",1],["E",1],["E",1],["E",0.5],["E",0.5], // is to ride in a (4 ✓)
+       ["E",1],["D",1],["D",1],["E",1],         // one-horse o-pen  (4 ✓)
+       ["D",2],["G",2],                          // sleigh — hey     (4 ✓)
+       // Refrão repetido
        "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
        "E","E",["E",2],                          // Jin-gle bells    (4 ✓)
        "E","G","C","D",                          // Jin-gle all the  (4 ✓)
        ["E",4],                                  // wayyy            (4 ✓)
        "F","F","F","F",                          // Oh what fun it   (4 ✓)
-       ["F",1],["E",1],["E",1],["E",1],         // is to ride in    (4 ✓)
-       ["G",1],["G",1],["F",1],["D",1],         // a one-horse o-   (4 ✓)
-       ["C",4]                                   // pen sleigh!      (4 ✓)
+       ["F",1],["E",1],["E",1],["E",0.5],["E",0.5], // is to ride in a (4 ✓)
+       ["G",1],["G",1],["F",1],["D",1],         // one-horse o-pen  (4 ✓)
+       ["C",4]                                   // sleigh!          (4 ✓)
      ]},
 
     {title:"🎁 We Wish You a Merry Christmas",
@@ -1476,41 +1529,46 @@ body.is-touch .touch-hint{ display:block; }
      // Compasso 3/4 — pickup de 1 batida
      seq:[
        ["C",1],                                  // [pickup] We
-       ["F",1],["F",1],["G",1],                  // wish you a       (3 ✓)
-       ["F",1],["E",2],                          // mer-ry Christ-   (3 ✓)
-       ["D",1],["D",1],["D",1],                  // mas we wish you  (3 ✓)
-       ["G",1],["G",2],                          // a Mer-ry         (3 ✓)
-       ["A",1],["G",1],["F",1],                  // Christ-mas and a (3 ✓)
-       ["E",2],["C",1],                          // Hap-py New       (3 ✓)
-       ["A",1],["A",1],["A",1],                  // Year good ti-    (3 ✓)
-       ["B",1],["A",1],["G",1],                  // dings we bring   (3 ✓)
-       ["F",1],["E",1],["C",1],                  // to you and your  (3 ✓)
-       ["D",1],["G",1],["E",1],                  // kin we wish you  (3 ✓)
-       ["F",2],["C",1],                          // a Mer-ry         (3 ✓)
-       ["F",1],["F",1],["G",1],                  // Christ-mas and a (3 ✓)
-       ["F",1],["E",2],                          // Hap-py New Year! (3 ✓)
-       ["C",3]                                   // ~~~              (3 ✓)
+       ["F",1],["F",1],["G",1],                  // wish you a       (3✓)
+       ["F",1],["E",2],                          // mer-ry Christ-   (3✓)
+       ["D",1],["D",1],["D",1],                  // mas we wish      (3✓)
+       ["G",1],["G",2],                          // you a Mer-ry     (3✓)
+       ["A",1],["G",1],["F",1],                  // Christ-mas and   (3✓)
+       ["E",2],["C",1],                          // a Hap-py         (3✓)
+       // "good tidings we bring"
+       ["A",1],["A",1],["A",1],                  // good ti-dings    (3✓)
+       ["C2",1],["A",1],["G",1],                 // we bring to      (3✓)
+       ["F",1],["E",1],["C",1],                  // you and your     (3✓)
+       ["D",3],                                  // kin—             (3✓)
+       // "good tidings for Christmas"
+       ["D",1],["E",1],["C",1],                  // good ti-dings    (3✓)
+       ["D",1],["G",2],                          // for Christ-      (3✓)
+       // "and a Happy New Year"
+       ["G",1],["G",1],["A",1],                  // mas and a        (3✓)
+       ["G",1],["F",2],                          // Hap-py New       (3✓)
+       ["C",3]                                   // Year!            (3✓)
      ]},
 
     {title:"⛪ Oh When the Saints",
      bpm:92,
      difficulty:3,
-     // Compasso 4/4 — pickup de 3 notas
+     // Compasso 4/4
      seq:[
-       ["C",1],["E",1],["F",1],                  // [pickup] Oh when the (3 — pickup)
-       ["G",4],                                   // saints           (4 ✓)
+       ["C",1],["E",1],["F",1],                  // Oh when the      (pickup 3)
+       ["G",4],                                   // saints           (4✓)
        ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
-       ["G",4],                                   // saints           (4 ✓)
+       ["G",4],                                   // saints           (4✓)
        ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
-       ["G",2],["E",2],                          // saints go        (4 ✓)
-       ["C",1],["E",1],["F",2],                  // mar-ching in     (4 ✓)
-       ["C",1],                                  // Oh               (pickup)
+       ["G",2],["E",2],                           // saints go        (4✓)
+       ["C",1],["E",1],["F",2],                  // mar-ching in     (4✓)
+       // Verso: "Oh Lord I want to be in that number"
        ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
-       ["G",2],["G",1],["G",1],                  // saints go ma-    (4 ✓)
-       ["F",2],["E",1],["C",1],                  // rching in        (4 ✓)
-       ["D",1],["E",1],["C",2],                  // Oh Lord I        (4 ✓)
-       ["G",1],["A",2],["G",1],                  // want to be       (4 ✓)
-       ["G",4]                                   // in that number   (4 ✓)
+       ["G",1],["G",1],["G",1],["A",1],          // saints go mar-   (4✓)
+       ["G",1],["G",1],["E",2],                  // ching in         (4✓)
+       ["C",1],["E",1],["G",1],["G",1],          // Oh Lord I want   (4✓)
+       ["F",1],["F",1],["E",1],["C",1],          // to be in that    (4✓)
+       ["D",2],["C",2],                           // num-ber          (4✓)
+       ["C",4]                                    // ~~~              (4✓)
      ]},
 
     {title:"🎼 Ode à Alegria — Beethoven (Completo)",
@@ -1562,18 +1620,22 @@ body.is-touch .touch-hint{ display:block; }
      theme:"sunset",
      // Compasso 2/4 — 2 batidas por compasso, vivace!
      seq:[
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5], // Can can can can  (2 ✓)
-       ["A",0.5],["G",0.5],["F",0.5],["G",0.5], // can can can can  (2 ✓)
-       ["C",1.5],["E",0.5],                       // can — can       (2 ✓)
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.5], // can can can can  (2 ✓)
-       ["F",0.5],["E",0.5],["D",0.5],["E",0.5], // can can can can  (2 ✓)
-       ["G",1.5],["G",0.5],                       // can — voi-      (2 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5], // là le can-can   (2 ✓)
-       ["A",0.5],["G",0.5],["F",0.5],["G",0.5], // du pa-ra-dis    (2 ✓)
-       ["C",1],["C",0.5],["D",0.5],              // can — C-D       (2 ✓)
-       ["E",0.5],["F",0.5],["G",0.5],["A",0.5], // E-F-G-A         (2 ✓)
-       ["B",0.5],["C2",1.5],                      // B-Dó↑ can!     (2 ✓ — corrigido: soma 2)
-       ["C2",4]                                   // ~~~             (4 ✓)
+       // Frase 1: G-G-G-A-G-F-E / E-E-E-F-E-D-C / C...
+       ["G",0.5],["G",0.5],["G",0.5],["A",0.5], // Can can can can  (2 ✓)
+       ["G",0.5],["F",0.5],["E",1],              // can can can!     (2 ✓)
+       ["E",0.5],["E",0.5],["E",0.5],["F",0.5], // can can can can  (2 ✓)
+       ["E",0.5],["D",0.5],["C",1],              // can can can!     (2 ✓)
+       // Frase 2: subida C-D-E-F-G-A-B-C2
+       ["C",0.5],["D",0.5],["E",0.5],["F",0.5], // su-bi-da can-can (2 ✓)
+       ["G",0.5],["A",0.5],["B",0.5],["C2",0.5],// can can can can  (2 ✓)
+       // Frase 3: Lá-Sol descida rítmica
+       ["G",0.5],["G",0.5],["G",0.5],["A",0.5], // Can can can can  (2 ✓)
+       ["G",0.5],["F",0.5],["E",1],              // can can can!     (2 ✓)
+       ["E",0.5],["E",0.5],["E",0.5],["F",0.5], // can can can can  (2 ✓)
+       ["E",0.5],["D",0.5],["C",1],              // can can can!     (2 ✓)
+       // Final
+       ["G",0.5],["F",0.5],["E",0.5],["D",0.5], // des-ce a can-can (2 ✓)
+       ["C",4]                                   // can!!!           (4 ✓)
      ]},
   ];
 
@@ -1939,9 +2001,11 @@ body.is-touch .touch-hint{ display:block; }
       streakVal.textContent=streak;
       maxStreakVal.textContent=maxStreak;
       if(noteEl){ noteEl.classList.add("hit-good"); }
-      if(hl){ hl.classList.add("flash-good"); setTimeout(()=>hl.classList.remove("flash-good"),300); }
+      if(hl){ hl.classList.add("flash-good"); setTimeout(()=>hl.classList.remove("flash-good"),350); }
       bellEl.classList.add("hit-good-cell"); setTimeout(()=>bellEl.classList.remove("hit-good-cell"),250);
       spawnParticles(bellEl, ID2[laneId].color);
+      // Vibração curta de acerto
+      if(navigator.vibrate) navigator.vibrate(streak>=5 ? [30,20,30] : 25);
       // Timing label
       const absT = typeof timingMs === "number" ? Math.abs(timingMs) : HIT_WINDOW;
       const timingLabel = absT < 60 ? "⭐ Perfeito!" : absT < 130 ? "👍 Bom!" : absT < 200 ? "⚡ Cedo" : "🐌 Tarde";
@@ -1958,8 +2022,10 @@ body.is-touch .touch-hint{ display:block; }
       streak=0;
       streakVal.textContent="0";
       if(noteEl){ noteEl.classList.add("hit-bad"); }
-      if(hl){ hl.classList.add("flash-bad"); setTimeout(()=>hl.classList.remove("flash-bad"),300); }
+      if(hl){ hl.classList.add("flash-bad"); setTimeout(()=>hl.classList.remove("flash-bad"),350); }
       bellEl.classList.add("hit-bad-cell"); setTimeout(()=>bellEl.classList.remove("hit-bad-cell"),250);
+      // Vibração longa de erro
+      if(navigator.vibrate) navigator.vibrate([80, 40, 80]);
       showToast("❌ Errou!", "bad");
       mascoteSad();
     }
@@ -2063,7 +2129,7 @@ body.is-touch .touch-hint{ display:block; }
   }
 
   /* ═══ Game engine ═══ */
-  let events=[], raf=null, startTime=0, stopping=false, paused=false, pausedAt=0;
+  let events=[], raf=null, startTime=0, stopping=false, paused=false, pausedAt=0, countdownAborted=false;
   const HIT_WINDOW=280; // ms window for interactive hit detection
 
   function getMode(){ return modeSelect.value; }
@@ -2141,6 +2207,7 @@ body.is-touch .touch-hint{ display:block; }
     }
 
     function tick(){
+      if(countdownAborted){ countdownOverlay.classList.remove("show"); return; }
       // Animate number change
       countdownNum.style.animation = "none";
       void countdownNum.offsetWidth;
@@ -2159,6 +2226,7 @@ body.is-touch .touch-hint{ display:block; }
       } else {
         // GO!
         setTimeout(()=>{
+          if(countdownAborted){ countdownOverlay.classList.remove("show"); cdDots.forEach(d=>d.classList.remove("active")); return; }
           countdownNum.style.animation = "none";
           void countdownNum.offsetWidth;
           countdownNum.style.animation = "cdNum .5s ease-out";
@@ -2175,6 +2243,7 @@ body.is-touch .touch-hint{ display:block; }
           g2.gain.exponentialRampToValueAtTime(0.0001, now2+0.15);
           o2.connect(g2).connect(master); o2.start(now2); o2.stop(now2+0.16);
           setTimeout(()=>{
+            if(countdownAborted){ countdownOverlay.classList.remove("show"); cdDots.forEach(d=>d.classList.remove("active")); return; }
             countdownOverlay.classList.remove("show");
             cdDots.forEach(d => d.classList.remove("active"));
             callback();
@@ -2231,6 +2300,7 @@ body.is-touch .touch-hint{ display:block; }
 
     playBtn.disabled=true; pauseBtn.disabled=false; stopBtn.disabled=false;
 
+    countdownAborted=false;
     showCountdown(()=>{
       _startPlay(mode);
     });
@@ -2299,7 +2369,37 @@ body.is-touch .touch-hint{ display:block; }
         const _bh=Math.max(40,Math.min(60,dzH/9));
         const bh=Math.round(_bh * Math.min(e.dur, 3));
         b.style.cssText=`background:${n.color};height:${bh}px;top:${startTop}px;box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -3px 0 ${n.dark}`;
-        b.innerHTML=`<span>${n.name}</span>`;
+        // Símbolo musical SVG conforme duração
+        // 0.5=colcheia, 1=semínima, 2=mínima, 3+=semibreve
+        function noteSVG(dur){
+          const s=22, cx=11, cy=15, rx=6, ry=4;
+          if(dur>=3){
+            // semibreve — oval vazia
+            return `<svg width="${s}" height="${s}" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="white" stroke-width="2.2"/>
+            </svg>`;
+          } else if(dur>=2){
+            // mínima — oval vazia + haste
+            return `<svg width="${s}" height="${s}" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="white" stroke-width="2.2"/>
+              <line x1="${cx+rx-1}" y1="${cy-1}" x2="${cx+rx-1}" y2="${cy-12}" stroke="white" stroke-width="2"/>
+            </svg>`;
+          } else if(dur<=0.5){
+            // colcheia — oval cheia + haste + gancho
+            return `<svg width="${s}" height="${s}" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="white" transform="rotate(-20,${cx},${cy})"/>
+              <line x1="${cx+5}" y1="${cy-2}" x2="${cx+5}" y2="${cy-13}" stroke="white" stroke-width="2"/>
+              <path d="M${cx+5} ${cy-13} q6-1 4 6" fill="none" stroke="white" stroke-width="1.8"/>
+            </svg>`;
+          } else {
+            // semínima — oval cheia + haste
+            return `<svg width="${s}" height="${s}" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="white" transform="rotate(-20,${cx},${cy})"/>
+              <line x1="${cx+5}" y1="${cy-2}" x2="${cx+5}" y2="${cy-13}" stroke="white" stroke-width="2"/>
+            </svg>`;
+          }
+        }
+        b.innerHTML=`<span class="noteBlockName">${n.name}</span><span class="noteBlockSym">${noteSVG(e.dur)}</span>`;
         dz.appendChild(b);
         e.el=b;
       }
@@ -2374,34 +2474,37 @@ body.is-touch .touch-hint{ display:block; }
 
   function nextRepeatRound(){
     repeatPos=0; repeatPlaying=true;
-    // Generate random sequence of repeatLength notes
     repeatSeqList=[];
     for(let i=0;i<repeatLength;i++){
       repeatSeqList.push(NOTES[Math.floor(Math.random()*NOTES.length)].id);
     }
     repeatRound.textContent=`Ronda ${repeatRoundNum} — Sequência de ${repeatLength}`;
     repeatStatus.textContent="🎵 Ouve com atenção...";
-    renderRepeatPips(false);
-    // Play the sequence with delays
-    let delay=600;
+    renderRepeatPips(true); // mostra cores e nomes durante a reprodução
+    let delay=900;
     repeatSeqList.forEach((id,i)=>{
       setTimeout(()=>{
         if(repeatPlaying){
           playBell(ID2[id].freq,"song");
           ringBell(bellCells[id]);
-          // highlight pip
           const pip=repeatSeq.children[i];
-          if(pip){ pip.style.transform="scale(1.3)"; setTimeout(()=>pip.style.transform="",300); }
+          if(pip){
+            pip.style.transform="scale(1.45)";
+            pip.style.boxShadow=`0 0 18px ${ID2[id].color}`;
+            setTimeout(()=>{ pip.style.transform=""; pip.style.boxShadow=""; },650);
+          }
         }
       }, delay);
-      delay+=550;
+      delay+=900;
     });
+    // pausa mais longa antes da vez do jogador, depois esconde as cores
     setTimeout(()=>{
       if(repeatPlaying){
+        renderRepeatPips(false);
         repeatStatus.textContent="👆 A tua vez! Toca as notas na mesma ordem.";
         repeatPos=0;
       }
-    }, delay+200);
+    }, delay+1400);
   }
 
   function renderRepeatPips(showColors){
@@ -2435,11 +2538,12 @@ body.is-touch .touch-hint{ display:block; }
       if(repeatPos>=repeatSeqList.length){
         // Round complete!
         repeatStatus.textContent=`🎉 Correto! Próxima ronda...`;
+        if(navigator.vibrate) navigator.vibrate([25,15,25]);
         mascoteHappy();
         dance(1500);
         repeatRoundNum++;
-        if(repeatRoundNum % 2===0) repeatLength=Math.min(repeatLength+1,8);
-        setTimeout(()=>{ if(repeatPlaying) nextRepeatRound(); }, 1600);
+        if(repeatRoundNum % 3===0) repeatLength=Math.min(repeatLength+1,6);
+        setTimeout(()=>{ if(repeatPlaying) nextRepeatRound(); }, 2000);
       }
     } else {
       const pip=repeatSeq.children[repeatPos];
@@ -2447,9 +2551,10 @@ body.is-touch .touch-hint{ display:block; }
       misses++;
       mascoteSad();
       repeatStatus.textContent=`❌ Errado! Era ${ID2[expected].name}. A repetir...`;
+      if(navigator.vibrate) navigator.vibrate([80,40,80]);
       setTimeout(()=>{
         if(repeatPlaying){ renderRepeatPips(false); nextRepeatRound(); }
-      }, 1500);
+      }, 2200);
     }
     const total=hits+misses;
     if(total>0) accuracyVal.textContent=`${Math.round(hits/total*100)}%`;
@@ -2462,6 +2567,9 @@ body.is-touch .touch-hint{ display:block; }
 
   function stop(natural=false){
     const mode=getMode();
+    countdownAborted=true;
+    countdownOverlay.classList.remove("show");
+    cdDots.forEach(d=>d.classList.remove("active"));
     if(mode==="repeat"){ stopRepeatMode(); playBtn.disabled=false; pauseBtn.disabled=true; stopBtn.disabled=true; return; }
     // Cancelar o loop imediatamente — antes de qualquer outra coisa
     stopping=true;
@@ -2525,6 +2633,15 @@ body.is-touch .touch-hint{ display:block; }
   pauseBtn.onclick=togglePause;
   stopBtn.onclick=()=>stop(false);
   playAgainBtn.onclick=()=>{ resultOverlay.classList.remove("show"); play(); };
+  document.getElementById("chooseSongBtn").onclick=()=>{
+    resultOverlay.classList.remove("show");
+    // Scroll suave até ao selector e destacar
+    songSel.scrollIntoView({ behavior:"smooth", block:"center" });
+    songSel.style.transition="box-shadow .2s";
+    songSel.style.boxShadow="0 0 0 3px #ffd700, 0 0 24px rgba(255,215,0,0.6)";
+    songSel.focus();
+    setTimeout(()=>{ songSel.style.boxShadow=""; }, 1800);
+  };
 
   window.addEventListener("keydown",e=>{
     if(e.code==="Space" && !e.target.matches("button,select,input")){
