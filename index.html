@@ -19,7 +19,7 @@
 
 body{
   font-family:'Nunito',sans-serif;
-  background:var(--bg);
+  background:radial-gradient(ellipse at 20% 20%, #2a0a4e 0%, #1a0a2e 40%, #0a0418 100%);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
@@ -62,10 +62,11 @@ button, select, .bell-cell{
 .score-card{
   background:rgba(255,255,255,0.07);
   border:1px solid rgba(255,255,255,0.13);
-  border-radius:10px; padding:4px 12px;
-  text-align:center; backdrop-filter:blur(10px);
-  min-width:64px;
+  border-radius:16px; padding:5px 14px;
+  text-align:center; backdrop-filter:blur(12px);
+  min-width:66px;
   transition: transform .15s, background .15s;
+  box-shadow:0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .score-card.pulse{
   animation: scorePulse .35s ease-out;
@@ -192,11 +193,12 @@ button, select, .bell-cell{
 }
 
 .controls{
-  background:rgba(255,255,255,0.07);
-  border:1px solid rgba(255,255,255,0.13);
-  border-radius:14px; padding:7px 10px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px; padding:8px 12px;
   display:flex; flex-wrap:wrap; gap:7px; align-items:flex-end;
-  margin-bottom:6px; backdrop-filter:blur(10px);
+  margin-bottom:6px; backdrop-filter:blur(16px);
+  box-shadow:0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 .ctrl-group{ display:flex; flex-direction:column; gap:2px; flex:1 1 120px; min-width:100px; }
 .ctrl-group label{
@@ -205,29 +207,51 @@ button, select, .bell-cell{
 }
 select{
   background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2);
-  color:#fff; border-radius:8px;
-  padding:5px 24px 5px 8px; font-size:12px;
+  border:1px solid rgba(255,255,255,0.22);
+  color:#fff; border-radius:50px;
+  padding:6px 28px 6px 12px; font-size:12px;
   font-family:'Nunito',sans-serif; cursor:pointer;
   appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 7px center;
+  background-repeat:no-repeat; background-position:right 10px center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+  backdrop-filter:blur(8px);
 }
 select option{ background:#1a0a2e; }
 select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; font-weight:800; letter-spacing:.5px; }
 .btn-group{ display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; align-items:flex-end; }
 .btn{
-  border:none; border-radius:10px; cursor:pointer;
+  border:none; border-radius:50px; cursor:pointer;
   font-family:'Fredoka One',sans-serif;
-  font-size:14px; padding:7px 14px;
-  transition:transform .1s, box-shadow .1s; letter-spacing:.5px;
+  font-size:14px; padding:9px 18px;
+  transition:transform .12s, box-shadow .12s, filter .12s;
+  letter-spacing:.5px;
 }
-.btn:active{ transform:scale(.95); }
-.btn:disabled{ opacity:.4; cursor:not-allowed; }
-.btn-play{ background:linear-gradient(135deg,#ffd700,#ff9f00); color:#1a0a2e; box-shadow:0 4px 18px rgba(255,200,0,0.4); }
-.btn-pause{ background:rgba(255,255,255,0.13); border:1px solid rgba(255,255,255,0.25); color:#fff; }
-.btn-pause.active{ background:rgba(255,215,0,0.18); border-color:rgba(255,215,0,0.5); color:#ffd700; }
-.btn-stop{ background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; }
+.btn:hover{ filter:brightness(1.12); }
+.btn:active{ transform:scale(.93); }
+.btn:disabled{ opacity:.35; cursor:not-allowed; filter:none; }
+.btn-play{
+  background:linear-gradient(135deg,#ffd700,#ff9f00);
+  color:#1a0a2e;
+  box-shadow:0 4px 20px rgba(255,180,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.btn-pause{
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.28);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,0.2);
+}
+.btn-pause.active{
+  background:rgba(255,215,0,0.2);
+  border-color:rgba(255,215,0,0.55);
+  color:#ffd700;
+  box-shadow:0 2px 14px rgba(255,215,0,0.3);
+}
+.btn-stop{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);
+  color:#fff;
+}
 .note-count{ font-size:9px; color:var(--muted); text-align:center; margin-top:1px; }
 
 /* ═══ MODE TOGGLE ═══ */
@@ -259,8 +283,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   grid-template-columns:repeat(8,1fr);
   border-radius:22px;
   overflow:hidden;
-  border:2px solid rgba(255,255,255,0.12);
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  border:2px solid transparent;
+  background-clip:padding-box;
+  box-shadow:0 0 0 2px rgba(168,85,247,0.5), 0 0 0 4px rgba(56,189,248,0.2), 0 20px 60px rgba(0,0,0,0.7);
   position:relative;
 }
 
@@ -501,22 +526,25 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 .result-stat .rl{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
 .btn-play-again{
   background:linear-gradient(135deg,#ffd700,#ff9f00);
-  color:#1a0a2e; border:none; border-radius:14px;
+  color:#1a0a2e; border:none; border-radius:50px;
   font-family:'Fredoka One',sans-serif; font-size:20px;
-  padding:12px 36px; cursor:pointer; margin-top:8px;
-  transition:transform .1s, box-shadow .1s;
-  box-shadow:0 6px 24px rgba(255,200,0,0.4);
-}
-.btn-play-again:active{ transform:scale(.96); }
-.btn-choose-song{
-  background:rgba(255,255,255,0.12);
-  color:#fff; border:2px solid rgba(255,255,255,0.3); border-radius:14px;
-  font-family:'Fredoka One',sans-serif; font-size:17px;
-  padding:10px 28px; cursor:pointer; margin-top:6px;
-  transition:transform .1s, background .15s;
+  padding:13px 40px; cursor:pointer; margin-top:10px;
+  transition:transform .12s, filter .12s;
+  box-shadow:0 6px 28px rgba(255,200,0,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
   display:block; width:100%;
 }
-.btn-choose-song:hover{ background:rgba(255,255,255,0.2); }
+.btn-play-again:hover{ filter:brightness(1.1); }
+.btn-play-again:active{ transform:scale(.96); }
+.btn-choose-song{
+  background:rgba(255,255,255,0.1);
+  color:#fff; border:1px solid rgba(255,255,255,0.28); border-radius:50px;
+  font-family:'Fredoka One',sans-serif; font-size:17px;
+  padding:11px 28px; cursor:pointer; margin-top:8px;
+  transition:transform .12s, background .15s;
+  display:block; width:100%;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.btn-choose-song:hover{ background:rgba(255,255,255,0.18); }
 .btn-choose-song:active{ transform:scale(.96); }
 
 .hint{
@@ -681,6 +709,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     flex:1 1 0;
     min-height:42px;
     text-align:center;
+    border-radius:50px;
   }
 
   /* Header */
@@ -748,7 +777,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     align-items:flex-end;
     margin-left:4px;
   }
-  .btn{ font-size:12px; padding:7px 9px; min-height:38px; white-space:nowrap; }
+  .btn{ font-size:12px; padding:7px 9px; min-height:38px; white-space:nowrap; border-radius:50px; }
 
   /* Scoreboard — 2×2 */
   .scoreboard{ gap:4px; }
@@ -1671,10 +1700,12 @@ body.is-touch .touch-hint{ display:block; }
 
   /* ═══ Stars ═══ */
   const sf=document.getElementById("starfield");
-  for(let i=0;i<80;i++){
+  const starColors=["#fff","#ffd700","#a855f7","#38bdf8","#f472b6","#4ade80","#fb923c"];
+  for(let i=0;i<110;i++){
     const s=document.createElement("div"); s.className="star-dot";
-    const sz=Math.random()*2.5+.5;
-    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s`;
+    const sz=Math.random()*3+.5;
+    const col=starColors[Math.floor(Math.random()*starColors.length)];
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:${Math.random()*5}s;background:${col};box-shadow:0 0 ${sz*2}px ${col}`;
     sf.appendChild(s);
   }
 
@@ -1730,30 +1761,49 @@ body.is-touch .touch-hint{ display:block; }
     return `rgb(${r},${g},${b})`;
   }
 
-  /* ═══ Bell SVG ═══ */
+  /* ═══ Bell SVG — redesenhado mais 3D e detalhado ═══ */
   function makeBellSVG(color,dark,uid){
-    const lt=lighten(color,50);
-    return `<svg class="bell-svg" viewBox="0 0 70 82" xmlns="http://www.w3.org/2000/svg">
+    const lt=lighten(color,60);
+    const mid=lighten(color,20);
+    return `<svg class="bell-svg" viewBox="0 0 80 95" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="rg${uid}" cx="36%" cy="26%" r="68%">
+        <radialGradient id="rg${uid}" cx="32%" cy="22%" r="72%">
           <stop offset="0%" stop-color="${lt}"/>
-          <stop offset="50%" stop-color="${color}"/>
+          <stop offset="40%" stop-color="${mid}"/>
+          <stop offset="80%" stop-color="${color}"/>
           <stop offset="100%" stop-color="${dark}"/>
         </radialGradient>
+        <radialGradient id="rim${uid}" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="${mid}"/>
+          <stop offset="100%" stop-color="${dark}"/>
+        </radialGradient>
+        <filter id="sh${uid}" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="${dark}" flood-opacity="0.5"/>
+        </filter>
       </defs>
-      <ellipse cx="35" cy="76" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-      <path d="M13,58 Q11,38 15,25 Q19,10 35,7 Q51,10 55,25 Q59,38 57,58 Z"
-            fill="url(#rg${uid})"/>
-      <path d="M17,52 Q16,34 19,23 Q21,15 27,12"
-            stroke="rgba(255,255,255,0.38)" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <ellipse cx="27" cy="17" rx="7" ry="3.5" fill="rgba(255,255,255,0.2)" transform="rotate(-22,27,17)"/>
-      <ellipse cx="35" cy="58" rx="24" ry="8.5" fill="${dark}"/>
-      <ellipse cx="35" cy="56" rx="24" ry="8.5" fill="${color}"/>
-      <ellipse cx="25" cy="53.5" rx="9" ry="3" fill="rgba(255,255,255,0.22)"/>
-      <rect x="31" y="1" width="8" height="9" rx="4" fill="#d0d8e4"/>
-      <ellipse cx="35" cy="10" rx="5.5" ry="3.5" fill="${lt}"/>
-      <line x1="35" y1="56" x2="35" y2="66" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
-      <circle cx="35" cy="68" r="4.5" fill="#888"/>
+      <!-- ombra sul pavimento -->
+      <ellipse cx="40" cy="90" rx="22" ry="5" fill="rgba(0,0,0,0.25)"/>
+      <!-- corpo principale -->
+      <path d="M14,64 Q10,42 14,28 Q18,10 40,7 Q62,10 66,28 Q70,42 66,64 Z"
+            fill="url(#rg${uid})" filter="url(#sh${uid})"/>
+      <!-- riflesso speculare sinistro -->
+      <path d="M19,58 Q17,38 20,26 Q22,16 29,13"
+            stroke="rgba(255,255,255,0.45)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- riflesso piccolo ovale -->
+      <ellipse cx="28" cy="20" rx="8" ry="4" fill="rgba(255,255,255,0.28)" transform="rotate(-25,28,20)"/>
+      <!-- orlo inferiore - ombra -->
+      <ellipse cx="40" cy="65" rx="27" ry="9.5" fill="${dark}"/>
+      <!-- orlo inferiore -->
+      <ellipse cx="40" cy="63" rx="27" ry="9.5" fill="url(#rim${uid})"/>
+      <!-- riflesso sull'orlo -->
+      <ellipse cx="28" cy="60" rx="11" ry="3.5" fill="rgba(255,255,255,0.25)"/>
+      <!-- gancio superiore -->
+      <rect x="35" y="1" width="10" height="9" rx="5" fill="#c8d4e8"/>
+      <ellipse cx="40" cy="10" rx="6" ry="3.8" fill="${lt}"/>
+      <!-- batacchio -->
+      <line x1="40" y1="63" x2="40" y2="74" stroke="#aaa" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="40" cy="77" r="5" fill="#999"/>
+      <circle cx="38.5" cy="75.5" r="1.8" fill="rgba(255,255,255,0.4)"/>
     </svg>`;
   }
 
@@ -2368,7 +2418,9 @@ body.is-touch .touch-hint{ display:block; }
         b.className="noteBlock";
         const _bh=Math.max(40,Math.min(60,dzH/9));
         const bh=Math.round(_bh * Math.min(e.dur, 3));
-        b.style.cssText=`background:${n.color};height:${bh}px;top:${startTop}px;box-shadow:0 5px 16px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -3px 0 ${n.dark}`;
+        b.style.cssText=`background:${n.color};height:${bh}px;top:${startTop}px;`+
+          `box-shadow:0 0 18px 6px ${n.color}cc, 0 0 40px 10px ${n.color}55,`+
+          `inset 0 2px 0 rgba(255,255,255,.45),inset 0 -3px 0 ${n.dark}; border-radius:10px;`;
         // Símbolo musical SVG conforme duração
         // 0.5=colcheia, 1=semínima, 2=mínima, 3+=semibreve
         function noteSVG(dur){
