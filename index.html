@@ -229,6 +229,8 @@ button, select, .bell-cell{
 @keyframes vbPop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-18px) rotate(-6deg)}70%{transform:translateY(-8px) rotate(5deg)}}
 #vb-float-arm{transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;}
 @media(max-width:480px){.robot-wrap{bottom:.3rem;right:.3rem;}#vb-float{width:52px;}.vb-bubble{max-width:145px;font-size:.68rem;}}
+/* On mobile, signature needs extra bottom space for the fixed bar */
+@media(max-width:768px){ .vb-signature{ padding-bottom:0; margin-bottom:0; } }
 
 .vb-eye-left {
   transform-origin: 33px 23px;
@@ -1017,6 +1019,52 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   .next-note-pip{ width:22px; height:22px; font-size:8px; }
 }
 
+/* ═══ BOTTOM FIXED BUTTON BAR (mobile only) ═══ */
+.bottom-btn-bar{
+  display:none;
+}
+@media(max-width:768px){
+  /* Hide btn-group inside controls on mobile */
+  .controls .btn-group{
+    display:none !important;
+  }
+  /* Show fixed bottom bar */
+  .bottom-btn-bar{
+    display:flex;
+    position:fixed;
+    bottom:0; left:0; right:0;
+    z-index:700;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    gap:10px;
+    background:linear-gradient(0deg, rgba(15,5,35,0.98) 0%, rgba(26,10,46,0.96) 100%);
+    border-top:1.5px solid rgba(168,85,247,0.4);
+    box-shadow:0 -4px 24px rgba(0,0,0,0.6), 0 -1px 0 rgba(255,215,0,0.08);
+    backdrop-filter:blur(16px);
+    align-items:center;
+    justify-content:stretch;
+  }
+  .bottom-btn-bar .btn{
+    flex:1 1 0;
+    min-height:48px;
+    font-size:clamp(13px,4vw,16px);
+    border-radius:50px;
+    white-space:nowrap;
+  }
+  .bottom-btn-bar .btn-play{
+    font-size:clamp(14px,4.5vw,17px);
+    min-height:52px;
+  }
+  /* Add bottom padding to wrap so content doesn't hide behind bar */
+  .wrap{
+    padding-bottom:calc(80px + env(safe-area-inset-bottom)) !important;
+  }
+  /* Hide robot on very small screens to avoid overlap */
+}
+@media(max-width:420px){
+  .bottom-btn-bar .btn{ font-size:clamp(11px,3.5vw,14px); min-height:44px; }
+  .robot-wrap{ bottom:calc(76px + env(safe-area-inset-bottom) + 4px) !important; }
+}
+
 /* ═══ LANDSCAPE MOBILE ═══ */
 @media(max-height:500px) and (orientation:landscape){
   .header{ margin-bottom:2px; }
@@ -1026,8 +1074,12 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   .bell-cell{ min-height:clamp(42px,11vh,60px); }
   .bell-name{ font-size:clamp(7px,1.6vw,11px); }
   .controls{ padding:3px 6px; gap:4px; grid-template-columns:repeat(3,1fr); }
-  .btn-group{ grid-column:unset; flex:unset; }
+  /* In landscape, show buttons inside controls again */
+  .controls .btn-group{ display:flex !important; grid-column:unset; flex:unset; }
   .btn{ padding:6px 10px; font-size:12px; min-height:34px; }
+  /* Hide bottom bar in landscape */
+  .bottom-btn-bar{ display:none !important; }
+  .wrap{ padding-bottom:0 !important; }
 }
 
 /* ═══ LARGE TABLET / DESKTOP ═══ */
@@ -2923,6 +2975,33 @@ body.is-touch .touch-hint{ display:block; }
   playBtn.onclick=play;
   pauseBtn.onclick=togglePause;
   stopBtn.onclick=()=>stop(false);
+
+  // Bottom bar buttons (mobile) — mirror the top buttons
+  const play2=document.getElementById("play2");
+  const pause2=document.getElementById("pause2");
+  const stop2=document.getElementById("stop2");
+  if(play2){ play2.onclick=play; }
+  if(pause2){ pause2.onclick=togglePause; }
+  if(stop2){ stop2.onclick=()=>stop(false); }
+
+  // Keep bottom bar buttons in sync with top buttons (disabled state & text)
+  const syncBottomBar=()=>{
+    if(!play2) return;
+    play2.disabled=playBtn.disabled;
+    pause2.disabled=pauseBtn.disabled;
+    stop2.disabled=stopBtn.disabled;
+    pause2.textContent=pauseBtn.textContent;
+    pause2.className=pauseBtn.className.replace("btn-pause","btn-pause");
+    // Sync active class for pause
+    if(pauseBtn.classList.contains("active")) pause2.classList.add("active");
+    else pause2.classList.remove("active");
+  };
+  // Observe attribute changes on top buttons to sync bottom bar
+  const btnObserver=new MutationObserver(syncBottomBar);
+  [playBtn,pauseBtn,stopBtn].forEach(b=>{
+    btnObserver.observe(b,{attributes:true,characterData:true,childList:true});
+  });
+  syncBottomBar();
   playAgainBtn.onclick=()=>{ resultOverlay.classList.remove("show"); play(); };
   document.getElementById("chooseSongBtn").onclick=()=>{
     resultOverlay.classList.remove("show");
@@ -3020,6 +3099,13 @@ body.is-touch .touch-hint{ display:block; }
   });
 })();
 </script>
+
+<!-- BOTTOM FIXED BUTTON BAR (mobile only) -->
+<div class="bottom-btn-bar" id="bottomBtnBar">
+  <button class="btn btn-play" id="play2">▶ Tocar</button>
+  <button class="btn btn-pause" id="pause2" disabled>⏸ Pausa</button>
+  <button class="btn btn-stop" id="stop2" disabled>⏹ Parar</button>
+</div>
 
 <div class="vb-signature"><span>🎵 © Professora Vanda Várzea 🎵</span></div>
 </body>
