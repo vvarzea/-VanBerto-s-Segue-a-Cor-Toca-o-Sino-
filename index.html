@@ -2976,32 +2976,14 @@ body.is-touch .touch-hint{ display:block; }
   pauseBtn.onclick=togglePause;
   stopBtn.onclick=()=>stop(false);
 
-  // Bottom bar buttons (mobile) — mirror the top buttons
-  const play2=document.getElementById("play2");
-  const pause2=document.getElementById("pause2");
-  const stop2=document.getElementById("stop2");
-  if(play2){ play2.onclick=play; }
-  if(pause2){ pause2.onclick=togglePause; }
-  if(stop2){ stop2.onclick=()=>stop(false); }
+  // Expose functions and refs globally so the bottom bar script (added after) can wire up
+  window._gamePlay=play;
+  window._gameTogglePause=togglePause;
+  window._gameStop=()=>stop(false);
+  window._gamePlayBtn=playBtn;
+  window._gamePauseBtn=pauseBtn;
+  window._gameStopBtn=stopBtn;
 
-  // Keep bottom bar buttons in sync with top buttons (disabled state & text)
-  const syncBottomBar=()=>{
-    if(!play2) return;
-    play2.disabled=playBtn.disabled;
-    pause2.disabled=pauseBtn.disabled;
-    stop2.disabled=stopBtn.disabled;
-    pause2.textContent=pauseBtn.textContent;
-    pause2.className=pauseBtn.className.replace("btn-pause","btn-pause");
-    // Sync active class for pause
-    if(pauseBtn.classList.contains("active")) pause2.classList.add("active");
-    else pause2.classList.remove("active");
-  };
-  // Observe attribute changes on top buttons to sync bottom bar
-  const btnObserver=new MutationObserver(syncBottomBar);
-  [playBtn,pauseBtn,stopBtn].forEach(b=>{
-    btnObserver.observe(b,{attributes:true,characterData:true,childList:true});
-  });
-  syncBottomBar();
   playAgainBtn.onclick=()=>{ resultOverlay.classList.remove("show"); play(); };
   document.getElementById("chooseSongBtn").onclick=()=>{
     resultOverlay.classList.remove("show");
@@ -3106,6 +3088,33 @@ body.is-touch .touch-hint{ display:block; }
   <button class="btn btn-pause" id="pause2" disabled>⏸ Pausa</button>
   <button class="btn btn-stop" id="stop2" disabled>⏹ Parar</button>
 </div>
+<script>
+(function(){
+  const play2  = document.getElementById("play2");
+  const pause2 = document.getElementById("pause2");
+  const stop2  = document.getElementById("stop2");
+  if(!play2) return;
+
+  play2.onclick  = function(){ window._gamePlay && window._gamePlay(); };
+  pause2.onclick = function(){ window._gameTogglePause && window._gameTogglePause(); };
+  stop2.onclick  = function(){ window._gameStop && window._gameStop(); };
+
+  // Sync disabled state and text from top buttons to bottom bar
+  function sync(){
+    var pb = window._gamePlayBtn, pab = window._gamePauseBtn, sb = window._gameStopBtn;
+    if(!pb) return;
+    play2.disabled  = pb.disabled;
+    pause2.disabled = pab.disabled;
+    stop2.disabled  = sb.disabled;
+    pause2.textContent = pab.textContent;
+    if(pab.classList.contains("active")) pause2.classList.add("active");
+    else pause2.classList.remove("active");
+  }
+
+  // Poll every 100ms — lightweight and works regardless of when buttons update
+  setInterval(sync, 100);
+})();
+</script>
 
 <div class="vb-signature"><span>🎵 © Professora Vanda Várzea 🎵</span></div>
 </body>
