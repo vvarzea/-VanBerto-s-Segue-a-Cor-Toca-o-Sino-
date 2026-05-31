@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>🔔 Segue a Cor, Toca o Sino v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -17,12 +17,18 @@
 }
 *{ box-sizing:border-box; margin:0; padding:0; }
 
+html, body{
+  height:100%;
+}
 body{
   font-family:'Nunito',sans-serif;
   background:radial-gradient(ellipse at 20% 20%, #2a0a4e 0%, #1a0a2e 40%, #0a0418 100%);
   color:var(--text);
   min-height:100vh;
+  min-height:100dvh;
   overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
 }
 
 /* Prevent double-tap zoom on interactive elements */
@@ -43,12 +49,24 @@ button, select, .bell-cell{
 .wrap{
   position:relative; z-index:1;
   width:100%;
-  max-width:1100px; margin:0 auto; padding:8px 12px;
+  max-width:1600px; margin:0 auto; padding:8px 16px;
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  min-height:0;
+}
+
+/* Constrain header/controls to a readable width, but let game be full-width */
+.inner-wrap{
+  max-width:1200px;
+  margin:0 auto;
+  width:100%;
 }
 
 .header{
-  text-align:center; margin-bottom:8px;
+  text-align:center; margin-bottom:4px;
   position:relative;
+  flex-shrink:0;
 }
 .header h1{
   font-family:'Fredoka One',sans-serif;
@@ -101,7 +119,8 @@ button, select, .bell-cell{
 /* ═══ SCOREBOARD ═══ */
 .scoreboard{
   display:flex; justify-content:center; gap:8px; flex-wrap:wrap;
-  margin-bottom:8px;
+  margin-bottom:4px;
+  flex-shrink:0;
 }
 .score-card{
   background:linear-gradient(145deg,rgba(255,255,255,0.09),rgba(255,255,255,0.04));
@@ -132,10 +151,11 @@ button, select, .bell-cell{
 /* ═══ PROGRESS BAR ═══ */
 .progress-wrap{
   background:rgba(255,255,255,0.06);
-  border-radius:99px; height:6px; margin-bottom:8px;
+  border-radius:99px; height:6px; margin-bottom:4px;
   border:1px solid rgba(255,255,255,0.09);
   overflow:hidden;
   box-shadow:inset 0 1px 3px rgba(0,0,0,0.4);
+  flex-shrink:0;
 }
 .progress-bar{
   height:100%;
@@ -148,25 +168,23 @@ button, select, .bell-cell{
 
 /* ═══ MASCOTE VanBerto's ═══ */
 .vb-signature {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  z-index: 9999;
+  display: block;
+  width: 100%;
+  text-align: center;
   font-family: 'Fredoka One', sans-serif;
   font-size: 13px;
   line-height: 1.5;
-  text-align: right;
-  background: rgba(10,4,30,0.7);
-  border: 1px solid rgba(56,189,248,0.3);
-  border-radius: 12px;
-  padding: 8px 14px;
-  backdrop-filter: blur(8px);
+  padding: 4px 0 8px;
+  margin-top: 4px;
+  flex-shrink:0;
   background: linear-gradient(135deg, #38bdf8, #a855f7);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   filter: drop-shadow(0 0 8px rgba(56,189,248,0.5));
   pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 /* ── ROBOT FLUTUANTE ── */
 .robot-wrap{position:fixed;bottom:.85rem;right:.85rem;z-index:600;display:flex;flex-direction:column;align-items:center;}
@@ -252,9 +270,10 @@ button, select, .bell-cell{
 .controls{
   background:linear-gradient(145deg,rgba(30,10,60,0.85),rgba(15,5,35,0.9));
   border:1.5px solid rgba(168,85,247,0.35);
-  border-radius:22px; padding:12px 14px;
+  border-radius:22px; padding:10px 14px;
   display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end;
-  margin-bottom:8px; backdrop-filter:blur(20px);
+  margin-bottom:4px; backdrop-filter:blur(20px);
+  flex-shrink:0;
   box-shadow:
     0 0 0 1px rgba(255,215,0,0.1),
     0 6px 32px rgba(0,0,0,0.5),
@@ -362,6 +381,8 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     0 20px 60px rgba(0,0,0,0.7),
     0 0 80px rgba(168,85,247,0.12);
   position:relative;
+  flex:1 1 auto;
+  min-height:0;
 }
 
 /* Cada lane tem um glow sutil da cor do sino */
@@ -370,6 +391,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   position:relative;
   border-right:1px solid rgba(255,255,255,0.06);
   background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.15) 100%);
+  height:100%;
 }
 .lane-col:last-child{ border-right:none; }
 
@@ -388,7 +410,8 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 .drop-zone{
   position:relative;
-  height:clamp(160px,38vh,520px);
+  flex:1 1 auto;
+  min-height:0;
   overflow:hidden;
   z-index:1;
 }
@@ -535,7 +558,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   transition:background .12s, box-shadow .15s;
   position:relative; overflow:hidden;
   z-index:2;
-  min-height:96px;
+  min-height:clamp(56px,10vh,120px);
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
 }
@@ -776,8 +799,8 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ TABLET LARGO (≤900px) ═══ */
 @media(max-width:900px){
-  .wrap{ padding:6px 8px; }
-  .drop-zone{ height:clamp(140px,32vw,260px); }
+  .wrap{ padding:6px 0; }
+  .inner-wrap{ padding:0 8px; }
   .bell-cell{ min-height:clamp(72px,15vw,100px); }
   .bell-name{ font-size:clamp(11px,1.9vw,16px); }
   .controls{ gap:6px; }
@@ -787,10 +810,10 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ TABLET PORTRAIT (≤768px) ═══ */
 @media(max-width:768px){
-  .wrap{ padding:5px 8px; }
+  .wrap{ padding:5px 0; }
+  .inner-wrap{ padding:0 8px; }
   .header h1{ font-size:clamp(16px,4vw,26px); }
   .header p{ font-size:11px; }
-  .drop-zone{ height:clamp(120px,30vw,220px); }
   .bell-cell{ min-height:clamp(64px,14vw,90px); padding:4px 2px 6px; }
   .bell-name{ font-size:clamp(10px,1.8vw,14px); padding:2px 5px; }
   .bell-key-hint{ display:none; }
@@ -825,10 +848,10 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ MOBILE (≤600px) ═══ */
 @media(max-width:600px){
-  .wrap{ padding:4px 5px; }
+  .wrap{ padding:4px 0; }
+  .inner-wrap{ padding:0 5px; }
   .header h1{ font-size:clamp(14px,4.5vw,20px); }
   .header p{ font-size:10px; margin-top:1px; }
-  .drop-zone{ height:clamp(110px,28vw,180px); }
   .noteBlock{ font-size:clamp(8px,2.5vw,12px); border-radius:50px; }
   .snow-overlay{ height:50px; }
 
@@ -892,9 +915,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ SMALL MOBILE (≤420px) ═══ */
 @media(max-width:420px){
-  .wrap{ padding:3px 3px; }
+  .wrap{ padding:3px 0; }
+  .inner-wrap{ padding:0 3px; }
   .header h1{ font-size:clamp(13px,4.8vw,18px); }
-  .drop-zone{ height:clamp(95px,26vw,150px); }
   .bell-cell{ min-height:clamp(50px,15vw,68px); padding:2px 1px 4px; }
   .bell-name{
     font-size:clamp(7px,2.5vw,11px);
@@ -952,7 +975,6 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ LANDSCAPE MOBILE ═══ */
 @media(max-height:500px) and (orientation:landscape){
-  .drop-zone{ height:clamp(75px,22vh,140px); }
   .header{ margin-bottom:2px; }
   .header p{ display:none; }
   .scoreboard{ margin-bottom:3px; }
@@ -966,15 +988,16 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ LARGE TABLET / DESKTOP ═══ */
 @media(min-width:1024px){
-  .drop-zone{ height:clamp(320px,38vh,500px); }
-  .bell-cell{ min-height:108px; }
-  .bell-name{ font-size:clamp(15px,1.5vw,22px); }
+  .wrap{ padding:8px 0; }
+  .bell-cell{ min-height:clamp(100px,12vh,140px); }
+  .bell-name{ font-size:clamp(15px,1.4vw,22px); }
   .controls{ flex-wrap:nowrap; }
+  .inner-wrap{ padding:0 16px; }
 }
 
 @media(min-width:1400px){
-  .drop-zone{ height:clamp(380px,44vh,580px); }
-  .bell-cell{ min-height:120px; }
+  .bell-cell{ min-height:clamp(110px,13vh,160px); }
+  .bell-name{ font-size:clamp(16px,1.3vw,24px); }
 }
 
 .hint{
@@ -995,12 +1018,13 @@ body.is-touch .touch-hint{ display:block; }
 /* ═══ NEXT NOTE DISPLAY ═══ */
 .next-note-bar{
   display:flex; gap:5px; align-items:center; justify-content:center;
-  margin-top:6px;
+  margin-top:4px;
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.1);
-  border-radius:12px; padding:7px 12px;
+  border-radius:12px; padding:5px 12px;
   backdrop-filter:blur(10px);
   flex-wrap:wrap;
+  flex-shrink:0;
 }
 .next-note-bar .nnb-label{
   font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);
@@ -1196,6 +1220,7 @@ body.is-touch .touch-hint{ display:block; }
 
 <div class="wrap">
 
+  <div class="inner-wrap">
   <div class="header">
     <h1>
       <span class="title-bell">🔔</span>
@@ -1300,9 +1325,12 @@ body.is-touch .touch-hint{ display:block; }
     <div class="repeat-status" id="repeatStatus">🎵 Ouve com atenção...</div>
   </div>
 
+  </div><!-- /.inner-wrap -->
+
   <div class="game-area" id="gameArea"></div>
 
   <!-- Próximas notas -->
+  <div class="inner-wrap">
   <div class="next-note-bar" id="nextNoteBar">
     <span class="nnb-label">🎵 A seguir:</span>
     <div id="nextNotePips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"></div>
@@ -1314,6 +1342,7 @@ body.is-touch .touch-hint{ display:block; }
   <div class="hint touch-hint" style="display:none">
     👆 Toca nos sinos quando as notas chegam à linha!
   </div>
+  </div><!-- /.inner-wrap -->
 
 </div>
 
@@ -1406,26 +1435,22 @@ body.is-touch .touch-hint{ display:block; }
      ]},
 
     {title:"🦈 Baby Shark",
-     bpm:108,
+     bpm:110,
      difficulty:1,
-     // Baby Shark: A A A A-C-E (em Lá) → transportado para Dó: E E E E-G-C2
-     // Os "doo" ficam em Mi, a frase sobe para Sol e Dó↑ só no fim
+     // Transposto para Dó maior: Ré→Sol, Mi→Lá, Sol→Dó↑, final Sol Sol Mi
+     // "Ba-by shark, doo doo doo doo-doo doo-doo"
      seq:[
-       // ── Baby Shark ──
-       ["E",0.5],["E",0.5],["E",1],             // Ba-by shark    (2 pickup)
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
-       ["E",0.5],["E",0.5],["G",1],["C2",2],   // Ba-by shark doo~ (4✓)
-       // ── Mommy Shark ──
-       ["E",0.5],["E",0.5],["E",1],            // Mom-my shark   (2 pickup)
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.5],["E",2], // doo doo doo doo doo~ (4✓)
-       ["E",0.5],["E",0.5],["G",1],["C2",2],  // Mom-my shark doo~ (4✓)
-       // ── Daddy Shark ──
-       ["G",0.5],["G",0.5],["G",1],            // Dad-dy shark   (2 pickup)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4✓)
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.5],["G",2], // doo doo doo doo doo~ (4✓)
-       ["G",0.5],["G",0.5],["A",1],["C2",2]   // Dad-dy shark doo~ (4✓)
+       // ── Linha 1 ──
+       ["G",1],["A",1],
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
+       // ── Linha 2 ──
+       ["G",1],["A",1],
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
+       // ── Linha 3 ──
+       ["G",1],["A",1],
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
+       // ── Baby Shark! final ──
+       ["C2",1],["C2",1],["A",2]                                // Dó↑ Dó↑ Lá
      ]},
 
     /* ══════════════════════════════════════════════
@@ -2855,7 +2880,6 @@ body.is-touch .touch-hint{ display:block; }
 
 })();
 </script>
-<div class="vb-signature">© Professora Vanda Várzea</div>
 
 <!-- ROBOT FLUTUANTE -->
 <div class="robot-wrap">
@@ -2914,5 +2938,7 @@ body.is-touch .touch-hint{ display:block; }
   });
 })();
 </script>
+
+<div class="vb-signature">© Professora Vanda Várzea</div>
 </body>
 </html>
