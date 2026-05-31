@@ -229,6 +229,12 @@ button, select, .bell-cell{
 @keyframes vbPop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-18px) rotate(-6deg)}70%{transform:translateY(-8px) rotate(5deg)}}
 #vb-float-arm{transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;}
 @media(max-width:480px){.robot-wrap{bottom:.3rem;right:.3rem;}#vb-float{width:52px;}.vb-bubble{max-width:145px;font-size:.68rem;}}
+/* On mobile, move robot down to sit just above the bottom button bar, not over the bells */
+@media(max-width:768px){
+  .robot-wrap{ bottom:calc(68px + env(safe-area-inset-bottom)) !important; right:.4rem; }
+  #vb-float{ width:44px; }
+  .vb-bubble{ max-width:130px; font-size:.65rem; }
+}
 /* On mobile, signature needs extra bottom space for the fixed bar */
 @media(max-width:768px){ .vb-signature{ padding-bottom:0; margin-bottom:0; } }
 
@@ -1062,7 +1068,6 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 }
 @media(max-width:420px){
   .bottom-btn-bar .btn{ font-size:clamp(11px,3.5vw,14px); min-height:44px; }
-  .robot-wrap{ bottom:calc(76px + env(safe-area-inset-bottom) + 4px) !important; }
 }
 
 /* ═══ LANDSCAPE MOBILE ═══ */
