@@ -1,0 +1,17 @@
+{
+  "name": "VanBerto's — Segue a Cor, Toca o Sino",
+  "short_name": "Sinos",
+  "description": "Jogo musical do VanBerto's: segue as cores e toca os sinos",
+  "lang": "pt-PT",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a0a2e",
+  "theme_color": "#1a0a2e",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

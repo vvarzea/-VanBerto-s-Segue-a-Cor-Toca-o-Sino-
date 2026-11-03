@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🔔 Segue a Cor, Toca o Sino v4</title>
+<title>🔔 Segue a Cor, Toca o Sino — VanBerto's</title>
+<meta name="theme-color" content="#1a0a2e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sinos">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -179,6 +186,13 @@ button, select, .bell-cell{
 #vb-float:hover{filter:drop-shadow(0 0 24px #38bdf8);}
 #vb-float.bounce{animation:vbPop .65s cubic-bezier(.34,1.56,.64,1),vbFloat 3s ease-in-out .65s infinite;}
 @keyframes vbPop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-18px) rotate(-6deg)}70%{transform:translateY(-8px) rotate(5deg)}}
+/* ecrã grande: o VanBerto's fica no canto de cima, para não tapar o último sino */
+@media (min-width:900px) and (min-height:600px){
+  .robot-wrap{top:.6rem;bottom:auto;flex-direction:column-reverse;}
+  .vb-bubble{margin-bottom:0;margin-top:16px;transform:translateY(-8px) scale(.88);}
+  .vb-bubble::after{bottom:auto;top:-16px;border-top:0;border-bottom:16px solid #ffd700;}
+  .vb-bubble::before{bottom:auto;top:-11px;border-top:0;border-bottom:13px solid #2a0a4e;}
+}
 #vb-float-arm{transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;}
 @media(max-width:480px){.robot-wrap{bottom:.45rem;right:.45rem;}#vb-float{width:62px;}.vb-bubble{max-width:155px;font-size:.72rem;}}
 
@@ -575,13 +589,13 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 .bell-key-hint{
   font-family:'Nunito',sans-serif;
-  font-size:clamp(8px,.9vw,11px);
-  font-weight:700;
-  color:rgba(255,255,255,0.5);
+  font-size:clamp(10px,1.1vw,14px);
+  font-weight:800;
+  color:rgba(255,255,255,0.92);
   line-height:1;
-  margin-top:2px;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.18);
+  margin-top:3px;
+  background:rgba(255,255,255,0.16);
+  border:1px solid rgba(255,255,255,0.4);
   border-radius:4px;
   padding:1px 4px;
 }
@@ -1134,6 +1148,24 @@ body.is-touch .touch-hint{ display:block; }
     #3840a0 87%,#5a70c0 95%,#80a0d8 100%) !important;
 }
 
+
+/* ═══ nome, recorde, ecrã inteiro, instalar ═══ */
+.vb-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.vb-chip{font-family:'Fredoka One','Nunito',sans-serif;font-size:12px;letter-spacing:.3px;color:#ffe9a8;
+  background:rgba(255,255,255,.08);border:1.5px solid rgba(255,215,0,.35);border-radius:999px;padding:4px 12px;cursor:pointer;line-height:1.2}
+.vb-chip:hover{background:rgba(255,215,0,.16)}
+.vb-chip-static{cursor:default}.vb-chip-static:hover{background:rgba(255,255,255,.08)}
+.vb-chip[hidden]{display:none!important}
+#vbNameOverlay{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:rgba(8,3,22,.88);padding:16px}
+#vbNameOverlay.show{display:flex}
+#vbNameBox{width:min(92vw,360px);text-align:center;background:linear-gradient(180deg,#2a0a4e,#1a0a2e);border:3px solid #ffd700;border-radius:20px;padding:22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+#vbNameBox h2{font-family:'Fredoka One',sans-serif;font-size:22px;color:#ffd700;margin-bottom:6px}
+#vbNameBox p{color:rgba(255,255,255,.75);font-size:14px;margin-bottom:12px}
+#vbNameIn{width:100%;font-family:'Fredoka One',sans-serif;font-size:20px;text-align:center;padding:10px 12px;border-radius:12px;border:3px solid #ffd700;background:#12062b;color:#fff8e0;outline:none}
+#vbNameIn:focus{box-shadow:0 0 0 3px rgba(168,85,247,.6)}
+#vbNameOk{margin-top:12px;font-family:'Fredoka One',sans-serif;font-size:18px;color:#241143;background:linear-gradient(180deg,#ffd700,#ffb700);border:0;border-radius:14px;padding:10px 26px;cursor:pointer}
+@media (min-width:1500px){ .wrap{max-width:1300px} }
+:fullscreen .wrap{max-width:1500px} :-webkit-full-screen .wrap{max-width:1500px}
 </style>
 </head>
 <body>
@@ -1177,6 +1209,7 @@ body.is-touch .touch-hint{ display:block; }
         <div class="rl">Melhor Sequência</div>
       </div>
     </div>
+    <div id="resBest" style="margin:6px 0 2px;font-family:'Fredoka One',sans-serif;font-size:15px;color:#ffd700"></div>
     <button class="btn-play-again" id="playAgainBtn">▶ Jogar Novamente</button>
     <button class="btn-choose-song" id="chooseSongBtn">🎵 Escolher Música</button>
   </div>
@@ -1193,6 +1226,12 @@ body.is-touch .touch-hint{ display:block; }
       <span class="title-bell">🔔</span>
     </h1>
     <p>Toca os sinos quando as notas chegam à linha!</p>
+    <div class="vb-tools">
+      <button type="button" id="vbNameBtn" class="vb-chip" title="Mudar o nome">👤 <span id="vbNameShow">—</span> ✏️</button>
+      <span class="vb-chip vb-chip-static" id="vbBestChip" title="Melhor pontuação desta música neste modo">🏆 Recorde: <b id="vbBestShow">—</b></span>
+      <button type="button" id="vbFsBtn" class="vb-chip" hidden>⛶ Ecrã inteiro</button>
+      <button type="button" id="vbInstallBtn" class="vb-chip" hidden>📲 Instalar jogo</button>
+    </div>
   </div>
 
   <!-- Scoreboard -->
@@ -3018,6 +3057,95 @@ body.is-touch .touch-hint{ display:block; }
   document.getElementById('vb-float').addEventListener('click', () => {
     bub(msgs[Math.floor(Math.random() * msgs.length)]);
   });
+})();
+</script>
+<div id="vbNameOverlay" role="dialog" aria-modal="true" aria-label="Como te chamas?">
+  <div id="vbNameBox">
+    <h2>👤 Como te chamas?</h2>
+    <p>Escreve o teu nome para o VanBerto's te conhecer!</p>
+    <input id="vbNameIn" maxlength="14" autocomplete="nickname" placeholder="O teu nome">
+    <button type="button" id="vbNameOk">OK ▶</button>
+  </div>
+</div>
+<script>
+(function(){
+  var LS_NAME='vb_sinos_name', LS_BEST='vb_sinos_best_v1';
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  var $=function(id){ return document.getElementById(id); };
+
+  /* ── nome ── */
+  var name=(lsGet(LS_NAME)||'').trim();
+  function showName(){ $('vbNameShow').textContent=name||'—'; }
+  function openName(){ $('vbNameIn').value=name; $('vbNameOverlay').classList.add('show'); setTimeout(function(){ $('vbNameIn').focus(); $('vbNameIn').select(); },60); }
+  function saveName(){
+    var v=$('vbNameIn').value.replace(/\s+/g,' ').trim().slice(0,14);
+    if(!v) v=name||'Amigo';
+    name=v; lsSet(LS_NAME,name); showName(); $('vbNameOverlay').classList.remove('show');
+  }
+  $('vbNameOk').addEventListener('click',saveName);
+  /* as letras do teclado não tocam sinos enquanto se escreve o nome */
+  $('vbNameIn').addEventListener('keydown',function(e){ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); saveName(); } });
+  $('vbNameBtn').addEventListener('click',openName);
+  showName(); if(!name) openName();
+
+  /* ── recorde por música + modo ── */
+  function readBest(){ try{ return JSON.parse(lsGet(LS_BEST)||'{}')||{}; }catch(e){ return {}; } }
+  function keyFor(song,mode){ return song+'|'+mode; }
+  function curSong(){ var s=$('song'); return s&&s.options[s.selectedIndex]?s.options[s.selectedIndex].textContent:''; }
+  function curMode(){ var m=$('modeSelect'); return m?m.value:''; }
+  function refreshBest(){
+    var b=readBest()[keyFor(curSong(),curMode())];
+    $('vbBestShow').textContent=b?b.score:'—';
+  }
+  ['song','modeSelect'].forEach(function(id){ var el=$(id); if(el) el.addEventListener('change',refreshBest); });
+  refreshBest();
+
+  /* ── quando aparece o resultado: nome no título + recorde ── */
+  var ro=$('resultOverlay');
+  new MutationObserver(function(){
+    if(!ro.classList.contains('show')||ro.dataset.vbDone==='1') return;
+    ro.dataset.vbDone='1';
+    var t=$('resultTitle');
+    if(name&&t){
+      var m=t.textContent.match(/^(.*?)([!.]?)\s*(\p{Extended_Pictographic}.*)$/u);
+      t.textContent=m?(m[1]+', '+name+m[2]+' '+m[3]):(t.textContent+' '+name);
+    }
+    var score=parseInt($('resultScore').textContent,10)||0;
+    var acc=parseInt($('resAccuracy').textContent,10)||0;
+    var songEl=$('resSongName'); var song=(songEl&&songEl.textContent)||curSong();
+    var mode=curMode(), all=readBest(), k=keyFor(song,mode), old=all[k];
+    var box=$('resBest');
+    if(score>0&&(!old||score>old.score)){
+      all[k]={score:score,acc:acc}; lsSet(LS_BEST,JSON.stringify(all));
+      box.textContent=old?('🎉 Novo recorde! (antes: '+old.score+')'):'🎉 Primeiro recorde guardado!';
+    } else if(old){
+      box.textContent='🏆 Recorde: '+old.score;
+    } else { box.textContent=''; }
+    refreshBest();
+  }).observe(ro,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(function(){ if(!ro.classList.contains('show')) ro.dataset.vbDone='0'; }).observe(ro,{attributes:true,attributeFilter:['class']});
+
+  /* ── ecrã inteiro ── */
+  var fsBtn=$('vbFsBtn'), de=document.documentElement;
+  var reqFs=de.requestFullscreen||de.webkitRequestFullscreen, exitFs=document.exitFullscreen||document.webkitExitFullscreen;
+  var standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  if(reqFs&&!standalone){
+    fsBtn.hidden=false;
+    fsBtn.addEventListener('click',function(){
+      var on=document.fullscreenElement||document.webkitFullscreenElement;
+      try{ on?exitFs.call(document):reqFs.call(de); }catch(e){}
+    });
+    var upd=function(){ fsBtn.textContent=(document.fullscreenElement||document.webkitFullscreenElement)?'🗗 Sair do ecrã inteiro':'⛶ Ecrã inteiro'; };
+    document.addEventListener('fullscreenchange',upd); document.addEventListener('webkitfullscreenchange',upd);
+  }
+
+  /* ── instalar como app ── */
+  var deferred=null, inst=$('vbInstallBtn');
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferred=e; if(!standalone) inst.hidden=false; });
+  inst.addEventListener('click',function(){ if(!deferred) return; deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; inst.hidden=true; }); });
+  window.addEventListener('appinstalled',function(){ inst.hidden=true; });
+  if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
 })();
 </script>
 </body>
