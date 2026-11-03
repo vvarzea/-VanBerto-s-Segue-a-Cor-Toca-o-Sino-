@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>🔔 Segue a Cor, Toca o Sino v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -17,18 +17,12 @@
 }
 *{ box-sizing:border-box; margin:0; padding:0; }
 
-html, body{
-  height:100%;
-}
 body{
   font-family:'Nunito',sans-serif;
   background:radial-gradient(ellipse at 20% 20%, #2a0a4e 0%, #1a0a2e 40%, #0a0418 100%);
   color:var(--text);
   min-height:100vh;
-  min-height:100dvh;
   overflow-x:hidden;
-  display:flex;
-  flex-direction:column;
 }
 
 /* Prevent double-tap zoom on interactive elements */
@@ -49,24 +43,12 @@ button, select, .bell-cell{
 .wrap{
   position:relative; z-index:1;
   width:100%;
-  max-width:1600px; margin:0 auto; padding:8px 16px;
-  display:flex;
-  flex-direction:column;
-  flex:1 1 auto;
-  min-height:0;
-}
-
-/* Constrain header/controls to a readable width, but let game be full-width */
-.inner-wrap{
-  max-width:1200px;
-  margin:0 auto;
-  width:100%;
+  max-width:1100px; margin:0 auto; padding:8px 12px;
 }
 
 .header{
-  text-align:center; margin-bottom:4px;
+  text-align:center; margin-bottom:8px;
   position:relative;
-  flex-shrink:0;
 }
 .header h1{
   font-family:'Fredoka One',sans-serif;
@@ -119,8 +101,7 @@ button, select, .bell-cell{
 /* ═══ SCOREBOARD ═══ */
 .scoreboard{
   display:flex; justify-content:center; gap:8px; flex-wrap:wrap;
-  margin-bottom:4px;
-  flex-shrink:0;
+  margin-bottom:8px;
 }
 .score-card{
   background:linear-gradient(145deg,rgba(255,255,255,0.09),rgba(255,255,255,0.04));
@@ -151,11 +132,10 @@ button, select, .bell-cell{
 /* ═══ PROGRESS BAR ═══ */
 .progress-wrap{
   background:rgba(255,255,255,0.06);
-  border-radius:99px; height:6px; margin-bottom:4px;
+  border-radius:99px; height:6px; margin-bottom:8px;
   border:1px solid rgba(255,255,255,0.09);
   overflow:hidden;
   box-shadow:inset 0 1px 3px rgba(0,0,0,0.4);
-  flex-shrink:0;
 }
 .progress-bar{
   height:100%;
@@ -167,45 +147,17 @@ button, select, .bell-cell{
 }
 
 /* ═══ MASCOTE VanBerto's ═══ */
-.vb-signature {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  text-align: center;
-  font-family: 'Fredoka One', sans-serif;
-  font-size: 13px;
-  line-height: 1;
-  padding: 8px 16px 80px; /* extra bottom padding so robot doesn't cover bells */
-  margin-top: 6px;
-  flex-shrink: 0;
-  pointer-events: none;
-  position: relative;
-  z-index: 1;
-  color: rgba(255,255,255,0.55);
-  letter-spacing: 0.5px;
-}
-.vb-signature::before,
-.vb-signature::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.3));
-}
-.vb-signature::after {
-  background: linear-gradient(90deg, rgba(168,85,247,0.3), transparent);
-}
-.vb-signature span {
-  background: linear-gradient(135deg, #38bdf8, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 6px rgba(56,189,248,0.4));
-  white-space: nowrap;
+.vb-signature{
+  position:relative; z-index:1;
+  text-align:center; padding:8px 0 14px; margin:6px auto 0; max-width:1100px;
+  font-family:'Fredoka One','Baloo 2',system-ui,sans-serif;
+  font-size:.8rem; letter-spacing:.5px;
+  color:rgba(255,179,209,.85);
+  border-top:1px solid rgba(236,30,121,.12);
+  user-select:none;
 }
 /* ── ROBOT FLUTUANTE ── */
-.robot-wrap{position:fixed;bottom:.5rem;right:.6rem;z-index:600;display:flex;flex-direction:column;align-items:center;}
+.robot-wrap{position:fixed;bottom:.85rem;right:.85rem;z-index:600;display:flex;flex-direction:column;align-items:center;}
 .vb-bubble{
   background:linear-gradient(135deg,#2a0a4e,#1a0835);
   border:3px solid #ffd700;
@@ -223,20 +175,12 @@ button, select, .bell-cell{
 .vb-bubble::after{content:"";position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:16px solid #ffd700;}
 .vb-bubble::before{content:"";position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid #2a0a4e;z-index:1;}
 .vb-bubble.show{opacity:1;transform:translateY(0) scale(1);}
-#vb-float{width:clamp(56px,8vw,74px);cursor:pointer;animation:vbFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 12px #7dd3fc);}
+#vb-float{width:clamp(68px,10vw,88px);cursor:pointer;animation:vbFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 12px #7dd3fc);}
 #vb-float:hover{filter:drop-shadow(0 0 24px #38bdf8);}
 #vb-float.bounce{animation:vbPop .65s cubic-bezier(.34,1.56,.64,1),vbFloat 3s ease-in-out .65s infinite;}
 @keyframes vbPop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-18px) rotate(-6deg)}70%{transform:translateY(-8px) rotate(5deg)}}
 #vb-float-arm{transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;}
-@media(max-width:480px){.robot-wrap{bottom:.3rem;right:.3rem;}#vb-float{width:52px;}.vb-bubble{max-width:145px;font-size:.68rem;}}
-/* On mobile, move robot down to sit just above the bottom button bar, not over the bells */
-@media(max-width:768px){
-  .robot-wrap{ bottom:calc(68px + env(safe-area-inset-bottom)) !important; right:.4rem; }
-  #vb-float{ width:44px; }
-  .vb-bubble{ max-width:130px; font-size:.65rem; }
-}
-/* On mobile, signature needs extra bottom space for the fixed bar */
-@media(max-width:768px){ .vb-signature{ padding-bottom:0; margin-bottom:0; } }
+@media(max-width:480px){.robot-wrap{bottom:.45rem;right:.45rem;}#vb-float{width:62px;}.vb-bubble{max-width:155px;font-size:.72rem;}}
 
 .vb-eye-left {
   transform-origin: 33px 23px;
@@ -296,10 +240,9 @@ button, select, .bell-cell{
 .controls{
   background:linear-gradient(145deg,rgba(30,10,60,0.85),rgba(15,5,35,0.9));
   border:1.5px solid rgba(168,85,247,0.35);
-  border-radius:22px; padding:10px 14px;
+  border-radius:22px; padding:12px 14px;
   display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end;
-  margin-bottom:4px; backdrop-filter:blur(20px);
-  flex-shrink:0;
+  margin-bottom:8px; backdrop-filter:blur(20px);
   box-shadow:
     0 0 0 1px rgba(255,215,0,0.1),
     0 6px 32px rgba(0,0,0,0.5),
@@ -332,16 +275,13 @@ select:focus{
 }
 select option{ background:#1a0a2e; }
 select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; font-weight:800; letter-spacing:.5px; }
-.btn-group{ display:flex; gap:7px; margin-left:auto; flex-wrap:nowrap; align-items:center; flex-shrink:0; }
+.btn-group{ display:flex; gap:7px; margin-left:auto; flex-wrap:wrap; align-items:flex-end; }
 .btn{
   border:none; border-radius:50px; cursor:pointer;
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(11px,1.8vw,15px); padding:10px 22px;
+  font-size:15px; padding:10px 22px;
   transition:transform .12s, box-shadow .15s, filter .12s;
   letter-spacing:.5px;
-  white-space:nowrap;
-  flex-shrink:1;
-  min-width:0;
 }
 .btn:hover:not(:disabled){ filter:brightness(1.15); transform:translateY(-2px); }
 .btn:active:not(:disabled){ transform:scale(.93) translateY(0); }
@@ -349,7 +289,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 .btn-play{
   background:linear-gradient(135deg,#ffd700,#ff9f00);
   color:#1a0a2e;
-  font-size:clamp(13px,2vw,17px); padding:11px clamp(14px,2.5vw,28px);
+  font-size:17px; padding:11px 28px;
   box-shadow:0 4px 24px rgba(255,180,0,0.55), inset 0 1px 0 rgba(255,255,255,0.45);
 }
 .btn-pause{
@@ -410,8 +350,6 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     0 20px 60px rgba(0,0,0,0.7),
     0 0 80px rgba(168,85,247,0.12);
   position:relative;
-  flex:1 1 auto;
-  min-height:0;
 }
 
 /* Cada lane tem um glow sutil da cor do sino */
@@ -420,8 +358,6 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   position:relative;
   border-right:1px solid rgba(255,255,255,0.06);
   background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.15) 100%);
-  height:100%;
-  overflow:hidden;
 }
 .lane-col:last-child{ border-right:none; }
 
@@ -440,13 +376,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 .drop-zone{
   position:relative;
-  flex:1 1 auto;
-  min-height:0;
+  height:clamp(160px,38vh,520px);
   overflow:hidden;
-  clip:rect(0,auto,auto,0); /* fallback */
-  clip-path:inset(0);       /* hard clip — notas nunca saem daqui */
   z-index:1;
-  isolation:isolate;
 }
 
 /* Lane glow no hover */
@@ -590,10 +522,8 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   cursor:pointer; user-select:none;
   transition:background .12s, box-shadow .15s;
   position:relative; overflow:hidden;
-  z-index:50;
-  isolation:isolate;
-  min-height:clamp(56px,10vh,120px);
-  max-height:clamp(120px,18vh,180px);
+  z-index:2;
+  min-height:96px;
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
 }
@@ -619,26 +549,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 }
 .bell-cell.hit-good-cell{ background:rgba(74,222,128,0.18); box-shadow:inset 0 0 24px rgba(74,222,128,0.15); }
 .bell-cell.hit-bad-cell{ background:rgba(248,113,113,0.18); box-shadow:inset 0 0 24px rgba(248,113,113,0.15); }
-.bell-cell.demo-flash{
-  background:linear-gradient(180deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.12) 100%) !important;
-  box-shadow:inset 0 0 32px var(--bc,rgba(255,255,255,0.5)), 0 0 28px 6px var(--bc,rgba(255,255,255,0.4)) !important;
-  border-top-width:5px !important;
-  animation: demoFlashAnim .42s ease-out;
-}
-@keyframes demoFlashAnim{
-  0%{ transform:scale(1); filter:brightness(1); }
-  25%{ transform:scale(1.06); filter:brightness(1.8); }
-  100%{ transform:scale(1); filter:brightness(1); }
-}
-.bell-cell.demo-flash .bell-svg{
-  filter:brightness(2.2) drop-shadow(0 0 18px var(--bc,#fff)) !important;
-  transform:scale(0.9) translateY(4px) !important;
-}
 
 .bell-svg{
   width:85%; height:auto;
-  max-height:clamp(60px,12vh,110px);
-  object-fit:contain;
   filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));
   transition:filter .15s, transform .12s;
   flex-shrink:0;
@@ -851,8 +764,8 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ TABLET LARGO (≤900px) ═══ */
 @media(max-width:900px){
-  .wrap{ padding:6px 0; }
-  .inner-wrap{ padding:0 8px; }
+  .wrap{ padding:6px 8px; }
+  .drop-zone{ height:clamp(140px,32vw,260px); }
   .bell-cell{ min-height:clamp(72px,15vw,100px); }
   .bell-name{ font-size:clamp(11px,1.9vw,16px); }
   .controls{ gap:6px; }
@@ -862,10 +775,10 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ TABLET PORTRAIT (≤768px) ═══ */
 @media(max-width:768px){
-  .wrap{ padding:5px 0; }
-  .inner-wrap{ padding:0 8px; }
+  .wrap{ padding:5px 8px; }
   .header h1{ font-size:clamp(16px,4vw,26px); }
   .header p{ font-size:11px; }
+  .drop-zone{ height:clamp(120px,30vw,220px); }
   .bell-cell{ min-height:clamp(64px,14vw,90px); padding:4px 2px 6px; }
   .bell-name{ font-size:clamp(10px,1.8vw,14px); padding:2px 5px; }
   .bell-key-hint{ display:none; }
@@ -891,19 +804,19 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     grid-column:1/-1;
     margin-left:0;
     justify-content:center;
-    gap:6px;
+    gap:8px;
     flex-wrap:nowrap;
   }
-  .btn{ font-size:clamp(11px,3.5vw,14px); padding:9px clamp(10px,2.5vw,18px); flex:1 1 0; min-height:40px; border-radius:50px; white-space:nowrap; }
-  .btn-play{ font-size:clamp(12px,3.8vw,15px); }
+  .btn{ font-size:14px; padding:9px 18px; flex:1 1 0; min-height:42px; border-radius:50px; }
+  .btn-play{ font-size:15px; }
 }
 
 /* ═══ MOBILE (≤600px) ═══ */
 @media(max-width:600px){
-  .wrap{ padding:4px 0; }
-  .inner-wrap{ padding:0 5px; }
+  .wrap{ padding:4px 5px; }
   .header h1{ font-size:clamp(14px,4.5vw,20px); }
   .header p{ font-size:10px; margin-top:1px; }
+  .drop-zone{ height:clamp(110px,28vw,180px); }
   .noteBlock{ font-size:clamp(8px,2.5vw,12px); border-radius:50px; }
   .snow-overlay{ height:50px; }
 
@@ -941,11 +854,11 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     grid-column:1/-1;
     margin-left:0;
     justify-content:center;
-    gap:4px;
+    gap:6px;
     flex-wrap:nowrap;
   }
-  .btn{ font-size:clamp(10px,3.2vw,13px); padding:8px clamp(8px,2vw,14px); flex:1 1 0; min-height:38px; border-radius:50px; white-space:nowrap; }
-  .btn-play{ font-size:clamp(11px,3.5vw,14px); }
+  .btn{ font-size:13px; padding:8px 14px; flex:1 1 0; min-height:40px; border-radius:50px; }
+  .btn-play{ font-size:14px; }
 
   /* Next note pips */
   .next-note-pip{ width:26px; height:26px; font-size:9px; }
@@ -967,9 +880,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
 
 /* ═══ SMALL MOBILE (≤420px) ═══ */
 @media(max-width:420px){
-  .wrap{ padding:3px 0; }
-  .inner-wrap{ padding:0 3px; }
+  .wrap{ padding:3px 3px; }
   .header h1{ font-size:clamp(13px,4.8vw,18px); }
+  .drop-zone{ height:clamp(95px,26vw,150px); }
   .bell-cell{ min-height:clamp(50px,15vw,68px); padding:2px 1px 4px; }
   .bell-name{
     font-size:clamp(7px,2.5vw,11px);
@@ -1005,7 +918,7 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
     margin-left:4px;
     align-items:flex-end;
   }
-  .btn{ font-size:clamp(9px,3vw,11px); padding:7px clamp(6px,1.8vw,8px); min-height:34px; white-space:nowrap; flex:1 1 0; }
+  .btn{ font-size:11px; padding:7px 8px; min-height:36px; white-space:nowrap; }
 
   /* Scoreboard — compact */
   .scoreboard{ gap:3px; flex-wrap:nowrap; }
@@ -1025,53 +938,9 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   .next-note-pip{ width:22px; height:22px; font-size:8px; }
 }
 
-/* ═══ BOTTOM FIXED BUTTON BAR (mobile only) ═══ */
-.bottom-btn-bar{
-  display:none;
-}
-@media(max-width:768px){
-  /* Hide btn-group inside controls on mobile */
-  .controls .btn-group{
-    display:none !important;
-  }
-  /* Show fixed bottom bar */
-  .bottom-btn-bar{
-    display:flex;
-    position:fixed;
-    bottom:0; left:0; right:0;
-    z-index:700;
-    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
-    gap:10px;
-    background:linear-gradient(0deg, rgba(15,5,35,0.98) 0%, rgba(26,10,46,0.96) 100%);
-    border-top:1.5px solid rgba(168,85,247,0.4);
-    box-shadow:0 -4px 24px rgba(0,0,0,0.6), 0 -1px 0 rgba(255,215,0,0.08);
-    backdrop-filter:blur(16px);
-    align-items:center;
-    justify-content:stretch;
-  }
-  .bottom-btn-bar .btn{
-    flex:1 1 0;
-    min-height:48px;
-    font-size:clamp(13px,4vw,16px);
-    border-radius:50px;
-    white-space:nowrap;
-  }
-  .bottom-btn-bar .btn-play{
-    font-size:clamp(14px,4.5vw,17px);
-    min-height:52px;
-  }
-  /* Add bottom padding to wrap so content doesn't hide behind bar */
-  .wrap{
-    padding-bottom:calc(80px + env(safe-area-inset-bottom)) !important;
-  }
-  /* Hide robot on very small screens to avoid overlap */
-}
-@media(max-width:420px){
-  .bottom-btn-bar .btn{ font-size:clamp(11px,3.5vw,14px); min-height:44px; }
-}
-
 /* ═══ LANDSCAPE MOBILE ═══ */
 @media(max-height:500px) and (orientation:landscape){
+  .drop-zone{ height:clamp(75px,22vh,140px); }
   .header{ margin-bottom:2px; }
   .header p{ display:none; }
   .scoreboard{ margin-bottom:3px; }
@@ -1079,28 +948,21 @@ select optgroup{ background:#0d0620; color:rgba(255,215,0,0.8); font-size:11px; 
   .bell-cell{ min-height:clamp(42px,11vh,60px); }
   .bell-name{ font-size:clamp(7px,1.6vw,11px); }
   .controls{ padding:3px 6px; gap:4px; grid-template-columns:repeat(3,1fr); }
-  /* In landscape, show buttons inside controls again */
-  .controls .btn-group{ display:flex !important; grid-column:unset; flex:unset; }
+  .btn-group{ grid-column:unset; flex:unset; }
   .btn{ padding:6px 10px; font-size:12px; min-height:34px; }
-  /* Hide bottom bar in landscape */
-  .bottom-btn-bar{ display:none !important; }
-  .wrap{ padding-bottom:0 !important; }
 }
 
 /* ═══ LARGE TABLET / DESKTOP ═══ */
 @media(min-width:1024px){
-  .wrap{ padding:8px 0; }
-  .bell-cell{ min-height:clamp(100px,12vh,140px); max-height:clamp(140px,20vh,200px); }
-  .bell-svg{ max-height:clamp(80px,13vh,130px); }
-  .bell-name{ font-size:clamp(15px,1.4vw,22px); }
+  .drop-zone{ height:clamp(320px,38vh,500px); }
+  .bell-cell{ min-height:108px; }
+  .bell-name{ font-size:clamp(15px,1.5vw,22px); }
   .controls{ flex-wrap:nowrap; }
-  .inner-wrap{ padding:0 16px; }
 }
 
 @media(min-width:1400px){
-  .bell-cell{ min-height:clamp(110px,13vh,160px); max-height:clamp(160px,22vh,220px); }
-  .bell-svg{ max-height:clamp(90px,14vh,140px); }
-  .bell-name{ font-size:clamp(16px,1.3vw,24px); }
+  .drop-zone{ height:clamp(380px,44vh,580px); }
+  .bell-cell{ min-height:120px; }
 }
 
 .hint{
@@ -1121,13 +983,12 @@ body.is-touch .touch-hint{ display:block; }
 /* ═══ NEXT NOTE DISPLAY ═══ */
 .next-note-bar{
   display:flex; gap:5px; align-items:center; justify-content:center;
-  margin-top:4px;
+  margin-top:6px;
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.1);
-  border-radius:12px; padding:5px 12px;
+  border-radius:12px; padding:7px 12px;
   backdrop-filter:blur(10px);
   flex-wrap:wrap;
-  flex-shrink:0;
 }
 .next-note-bar .nnb-label{
   font-size:10px; font-weight:700; color:rgba(255,255,255,0.5);
@@ -1323,7 +1184,6 @@ body.is-touch .touch-hint{ display:block; }
 
 <div class="wrap">
 
-  <div class="inner-wrap">
   <div class="header">
     <h1>
       <span class="title-bell">🔔</span>
@@ -1428,12 +1288,9 @@ body.is-touch .touch-hint{ display:block; }
     <div class="repeat-status" id="repeatStatus">🎵 Ouve com atenção...</div>
   </div>
 
-  </div><!-- /.inner-wrap -->
-
   <div class="game-area" id="gameArea"></div>
 
   <!-- Próximas notas -->
-  <div class="inner-wrap">
   <div class="next-note-bar" id="nextNoteBar">
     <span class="nnb-label">🎵 A seguir:</span>
     <div id="nextNotePips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"></div>
@@ -1445,7 +1302,6 @@ body.is-touch .touch-hint{ display:block; }
   <div class="hint touch-hint" style="display:none">
     👆 Toca nos sinos quando as notas chegam à linha!
   </div>
-  </div><!-- /.inner-wrap -->
 
 </div>
 
@@ -1511,7 +1367,7 @@ body.is-touch .touch-hint{ display:block; }
        "E","D","C","D",                          // Ma-ry had a         (4 ✓)
        "E","E",["E",2],                          // lit-tle lamb        (4 ✓)
        "D","D",["D",2],                          // lit-tle lamb        (4 ✓)
-       "E","E",["E",2],                          // lit-tle lamb        (4 ✓)
+       "E","G",["G",2],                          // lit-tle lamb        (4 ✓)
        "E","D","C","D",                          // Ma-ry had a         (4 ✓)
        "E","E","E","E",                          // lit-tle lamb whose  (4 ✓)
        "D","D","E","D",                          // fleece was white as (4 ✓)
@@ -1528,61 +1384,37 @@ body.is-touch .touch-hint{ display:block; }
        ["D",0.5],["E",1],                        // ma a tua      (1.5 ✓)
        ["E",0.5],["D",0.5],["E",0.5],           // bar-ca re-    (1.5 ✓)
        ["F",0.5],["G",1],                        // ma com a-     (1.5 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],           // a-le-gri-     (1.5 ✓)
-       ["E",0.5],["E",0.5],["E",0.5],           // a a-le-       (1.5 ✓)
-       ["C",0.5],["C",0.5],["C",0.5],           // gri-a a-      (1.5 ✓)
-       ["G",0.5],["G",0.5],["G",0.5],           // le-gri-a      (1.5 ✓)
-       ["G",0.5],["F",0.5],["E",0.5],           // a vi-da       (1.5 ✓)
-       ["D",0.5],["D",0.5],["D",0.5],           // é um so-      (1.5 ✓)
-       ["C",3]                                   // nho!          (3 ✓)
+       ["C2",0.5],["C2",0.5],["C2",0.5],         // a-le-gri-     (1.5 ✓)  Dó↑ Dó↑ Dó↑
+       ["G",0.5],["G",0.5],["G",0.5],           // a a-le-       (1.5 ✓)  Sol Sol Sol
+       ["E",0.5],["E",0.5],["E",0.5],           // gri-a a-      (1.5 ✓)  Mi Mi Mi
+       ["C",0.5],["C",0.5],["C",0.5],           // le-gri-a      (1.5 ✓)  Dó Dó Dó
+       ["G",1],["F",0.5],["E",1],["D",0.5],   // a vi-da é um  (3 ✓)    Sol Fá Mi Ré
+       ["C",3]                                   // so-nho!       (3 ✓)    Dó
      ]},
 
     {title:"🦈 Baby Shark",
-     bpm:110,
+     bpm:108,
      difficulty:1,
-     // Transposto para Dó maior — padrão: G A | C2×7 (×3) | C2 C2 A
-     // Cada verso sobe uma 3ª: Baby=G/A/C2, Mommy=A/B/D(→usa C2), Daddy=C2/D/E, Grandma/Grandpa igual
+     // Original (Sol maior): Ré Mi Sol Sol Sol Sol Sol Sol Sol  →  em Dó maior: Sol Lá Dó↑ Dó↑ Dó↑ Dó↑ Dó↑ Dó↑ Dó↑
      seq:[
-       // ══ Baby Shark ══
-       ["G",1],["A",1],
-       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
-       ["G",1],["A",1],
-       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
-       ["G",1],["A",1],
-       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
-       ["C2",1],["C2",1],["A",2],
-       // ══ Mommy Shark (sobe: A/C/E) ══
-       ["A",1],["C2",1],
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.25],["E",0.25],["E",0.25],["E",0.25],
-       ["A",1],["C2",1],
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.25],["E",0.25],["E",0.25],["E",0.25],
-       ["A",1],["C2",1],
-       ["E",0.5],["E",0.5],["E",0.5],["E",0.25],["E",0.25],["E",0.25],["E",0.25],
-       ["E",1],["E",1],["C2",2],
-       // ══ Daddy Shark (sobe: C/E/G) ══
-       ["C2",1],["E",1],
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.25],["G",0.25],["G",0.25],["G",0.25],
-       ["C2",1],["E",1],
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.25],["G",0.25],["G",0.25],["G",0.25],
-       ["C2",1],["E",1],
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.25],["G",0.25],["G",0.25],["G",0.25],
-       ["G",1],["G",1],["E",2],
-       // ══ Grandma Shark (igual ao Baby) ══
-       ["G",1],["A",1],
-       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
-       ["G",1],["A",1],
-       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
-       ["G",1],["A",1],
-       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.25],["C2",0.25],["C2",0.25],["C2",0.25],
-       ["C2",1],["C2",1],["A",2],
-       // ══ Grandpa Shark (igual ao Daddy) ══
-       ["C2",1],["E",1],
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.25],["G",0.25],["G",0.25],["G",0.25],
-       ["C2",1],["E",1],
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.25],["G",0.25],["G",0.25],["G",0.25],
-       ["C2",1],["E",1],
-       ["G",0.5],["G",0.5],["G",0.5],["G",0.25],["G",0.25],["G",0.25],["G",0.25],
-       ["G",1],["G",1],["E",3]
+       // ── Baby Shark ──
+       ["G",0.5],["A",0.5],["C2",1],            // Ba-by shark      (2)
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",1.5], // doo doo doo doo doo doo (4 ✓)
+       ["G",0.5],["A",0.5],["C2",1],            // Ba-by shark      (2)
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",1.5], // doo doo doo doo doo doo (4 ✓)
+       ["G",0.5],["A",0.5],["C2",3],            // Ba-by shark!     (4 ✓)
+       // ── Mommy Shark ──
+       ["G",0.5],["A",0.5],["C2",1],            // Mom-my shark     (2)
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",1.5], // doo doo doo doo doo doo (4 ✓)
+       ["G",0.5],["A",0.5],["C2",1],            // Mom-my shark     (2)
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",1.5], // doo doo doo doo doo doo (4 ✓)
+       ["G",0.5],["A",0.5],["C2",3],            // Mom-my shark!    (4 ✓)
+       // ── Daddy Shark ──
+       ["G",0.5],["A",0.5],["C2",1],            // Dad-dy shark     (2)
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",1.5], // doo doo doo doo doo doo (4 ✓)
+       ["G",0.5],["A",0.5],["C2",1],            // Dad-dy shark     (2)
+       ["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",0.5],["C2",1.5], // doo doo doo doo doo doo (4 ✓)
+       ["G",0.5],["A",0.5],["C2",3]             // Dad-dy shark!    (4 ✓)
      ]},
 
     /* ══════════════════════════════════════════════
@@ -1608,26 +1440,24 @@ body.is-touch .touch-hint{ display:block; }
      bpm:96,
      difficulty:2,
      theme:"forest",
-     // Versão portuguesa tradicional em Dó maior
-     // A-le-crim dou-ra-do: E E E C / E—
-     // que nas-ces no cam-po: F F F E / D—
+     // Versão portuguesa tradicional — começa em Sol: G G G E / G—
      seq:[
-       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // A-le-crim dou-   (2✓)
-       ["E",2],                                   // ra-do            (2✓)
-       ["F",0.5],["F",0.5],["F",0.5],["E",0.5], // que nas-ces no   (2✓)
-       ["D",2],                                   // cam-po           (2✓)
-       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cres-ces nas a-  (2✓)
-       ["E",2],                                   // lei-vas          (2✓)
-       ["F",0.5],["E",0.5],["D",0.5],["C",0.5], // sem ser plan-ta- (2✓)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // A-le-crim dou-   (2✓)
+       ["G",2],                                   // ra-do            (2✓)
+       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // que nas-ces no   (2✓)
+       ["E",2],                                   // cam-po           (2✓)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cres-ces nas a-  (2✓)
+       ["G",2],                                   // lei-vas          (2✓)
+       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // sem ser plan-ta- (2✓)
        ["D",2],                                   // do               (2✓)
-       // Refrão
-       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // A-le-crim dou-   (2✓)
-       ["E",2],                                   // ra-do            (2✓)
-       ["F",0.5],["F",0.5],["F",0.5],["E",0.5], // que nas-ces no   (2✓)
-       ["D",2],                                   // cam-po           (2✓)
+       // Refrão: "Quem te plantou foi o meu amor"
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // A-le-crim dou-   (2✓)
+       ["G",2],                                   // ra-do            (2✓)
+       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // que nas-ces no   (2✓)
+       ["E",2],                                   // cam-po           (2✓)
        ["C",0.5],["D",0.5],["E",0.5],["F",0.5], // quem te plan-    (2✓)
        ["G",2],                                   // tou              (2✓)
-       ["F",0.5],["E",0.5],["D",0.5],["C",0.5], // foi o meu a-     (2✓)
+       ["A",0.5],["G",0.5],["F",0.5],["E",0.5], // foi o meu a-     (2✓)
        ["C",4]                                    // mor              (4✓)
      ]},
 
@@ -1636,21 +1466,21 @@ body.is-touch .touch-hint{ display:block; }
      difficulty:2,
      theme:"sunset",
      // Compasso 2/4 — versão tradicional portuguesa
-     // Cai cai ba-lão: G G G E / G—
+     // A melodia NÃO sobe de tom entre frases — mantém-se no mesmo nível
      seq:[
-       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // Cai cai ba-    (2✓)
-       ["G",2],                                   // lão            (2✓)
-       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai cai ba-    (2✓)
-       ["G",2],                                   // lão            (2✓)
-       ["A",0.5],["A",0.5],["A",0.5],["G",0.5], // cai a-qui na   (2✓)
-       ["A",0.5],["G",0.5],["E",1],              // mi-nha mão     (2✓)
-       ["D",1],["D",1],                           // não não        (2✓)
-       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai cai ba-    (2✓)
-       ["G",2],                                   // lão            (2✓)
-       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai cai ba-    (2✓)
-       ["G",2],                                   // lão            (2✓)
-       ["A",0.5],["G",0.5],["E",0.5],["D",0.5], // cai a-qui no   (2✓)
-       ["G",4]                                    // chão           (4✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // Cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["G",0.5],["G",0.5],["G",0.5],["E",0.5], // cai a-qui na   (2✓)
+       ["G",0.5],["F",0.5],["E",1],              // mi-nha mão     (2✓)
+       ["C",1],["C",1],                           // não não        (2✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["E",0.5],["E",0.5],["E",0.5],["C",0.5], // cai cai ba-    (2✓)
+       ["E",2],                                   // lão            (2✓)
+       ["G",0.5],["F",0.5],["E",0.5],["D",0.5], // cai a-qui no   (2✓)
+       ["C",4]                                    // chão           (4✓)
      ]},
 
     {title:"🎂 Parabéns a Você",
@@ -1670,7 +1500,7 @@ body.is-touch .touch-hint{ display:block; }
        ["B",1],["A",2],                           // do a-mi-         (3 ✓)
        ["F",0.5],["F",0.5],                       // Pa-ra-           (pickup)
        ["E",1],["C",1],["D",1],                   // béns a vo-       (3 ✓)
-       ["D",2],["C",1]                            // cê               (3 ✓)
+       ["C",3]                                   // cê               (3 ✓)
      ]},
 
     {title:"🎵 Ode à Alegria — Beethoven",
@@ -1692,24 +1522,23 @@ body.is-touch .touch-hint{ display:block; }
      bpm:80,
      difficulty:2,
      theme:"ocean",
-     // Compasso 3/4 — melodia tradicional portuguesa
-     // Se eu fos-se um: E E E C / pei-xi-nho: D—
+     // Compasso 3/4
      seq:[
-       ["E",1],["E",0.5],["E",0.5],["C",1],     // Se eu fos-se um  (3✓)
-       ["D",3],                                  // pei-xi-nho       (3✓)
-       ["C",1],["D",1],["E",1],                  // e sou-be na-     (3✓)
-       ["G",3],                                  // dar              (3✓)
-       ["E",1],["E",0.5],["E",0.5],["C",1],     // vi-nha ao fun-do (3✓)
-       ["D",3],                                  // do mar           (3✓)
-       ["C",1],["D",1],["E",1],                  // bus-car-te       (3✓)
+       ["G",1.5],["G",0.5],["A",1],             // Se eu fos-se um  (3✓)
+       ["G",1.5],["E",1.5],                      // pei-xi-nho       (3✓)
+       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3✓)
+       ["C",3],                                  // dar              (3✓)
+       ["C",1.5],["C",0.5],["D",1],             // vi-nha ao fun-do (3✓)
+       ["E",1.5],["C",1.5],                      // do mar           (3✓)
+       ["G",2],["G",1],                          // bus-car-te       (3✓)
        ["G",3],                                  // a ti             (3✓)
-       ["E",1],["E",0.5],["E",0.5],["C",1],     // se eu fos-se um  (3✓)
-       ["D",3],                                  // pei-xi-nho       (3✓)
-       ["C",1],["D",1],["E",1],                  // e sou-be na-     (3✓)
-       ["G",3],                                  // dar              (3✓)
-       // "pegava-te à cauda e cá"
-       ["A",1],["G",1],["F",1],                  // pe-ga-va-te      (3✓)
-       ["E",1.5],["D",1.5],                      // à cau-da         (3✓)
+       ["G",1.5],["G",0.5],["A",1],             // se eu fos-se um  (3✓)
+       ["G",1.5],["E",1.5],                      // pei-xi-nho       (3✓)
+       ["D",2],["E",0.5],["D",0.5],             // e sou-be na-     (3✓)
+       ["C",3],                                  // dar              (3✓)
+       // "pegava-te à cauda e cá" — Dó Ré Mi Fá / Sol— Mi—
+       ["C",0.5],["D",0.5],["E",0.5],["F",0.5],["G",1], // pe-ga-va-te à   (3✓)
+       ["E",1.5],["C",1.5],                      // cau-da           (3✓)
        ["C",3]                                   // e cá!            (3✓)
      ]},
 
@@ -1724,13 +1553,13 @@ body.is-touch .touch-hint{ display:block; }
        // "Noite feliz" — Sol La Sol Mi
        ["G",1],["A",0.5],["G",1.5],             // Noi-te fe-    (3 ✓)
        ["E",3],                                  // liz           (3 ✓)
-       // "Resplendece" — Dó Dó Mi Dó
-       ["C",1],["C",1],["E",1],                  // Res-plen-de-  (3 ✓)
-       ["C",3],                                  // ce            (3 ✓)
-       // "A luz celestial" — Fá Fá Mi Ré Dó
-       ["F",2],["F",1],                          // A luz ce-     (3 ✓)
-       ["E",2],["D",1],                          // les-ti-       (3 ✓)
-       ["C",3],                                  // al            (3 ✓)
+       // "Resplendece" — Ré Ré Ré Si
+       ["D",1],["D",1],["D",1],                  // Res-plen-de-  (3 ✓)
+       ["B",3],                                  // ce            (3 ✓)
+       // "A luz celestial" — Lá Lá Dó↑ Lá Sol
+       ["A",2],["A",1],                          // A luz ce-     (3 ✓)
+       ["C2",3],                                 // les-          (3 ✓)
+       ["A",1],["G",2],                          // ti-al         (3 ✓)
        // "que anuncia ao mundo" — Si Si Ré Si Sol
        ["B",1.5],["B",0.5],["D",1],             // que a-nun-cia (3 ✓)
        ["B",1.5],["G",1.5],                      // ao mun-do     (3 ✓)
@@ -1829,26 +1658,18 @@ body.is-touch .touch-hint{ display:block; }
     {title:"🎁 We Wish You a Merry Christmas",
      bpm:104,
      difficulty:3,
-     // Compasso 3/4 — pickup C / F F G F E / D D D G G / A G F E C
+     // Compasso 3/4 — Dó | Fá Fá Sol Fá Mi | Ré Ré Ré | Sol Sol Lá Sol Fá | Mi Dó Dó | Lá Lá Si Lá Sol | Fá Ré Dó | Dó Ré Sol | Mi Fá
+     // (os sinos não têm Si♭: usa-se Si)
      seq:[
        ["C",1],                                  // [pickup] We
-       ["F",1],["F",1],["G",1],                  // wish you a       (3✓)
-       ["F",1],["E",2],                          // mer-ry           (3✓)
-       ["D",1],["D",1],["D",1],                  // Christ-mas we    (3✓)
-       ["G",1],["G",2],                          // wish you a       (3✓)
-       ["A",1],["G",1],["F",1],                  // Mer-ry Christ-   (3✓)
-       ["E",2],["C",1],                          // mas and a        (3✓)
-       // "Happy New Year"
-       ["A",1],["A",1],["A",1],                  // Hap-py New       (3✓)
-       ["C2",1],["A",1],["G",1],                 // Year to          (3✓)
-       ["F",1],["E",1],["C",1],                  // you and your     (3✓)
-       ["D",3],                                  // kin—             (3✓)
-       // "good tidings we bring"
-       ["D",1],["E",1],["C",1],                  // good ti-dings    (3✓)
-       ["D",1],["G",2],                          // we bring         (3✓)
-       ["G",1],["G",1],["A",1],                  // good ti-dings    (3✓)
-       ["G",1],["F",2],                          // for Christ-mas   (3✓)
-       ["C",3]                                   // and a Hap-py New Year! (3✓)
+       ["F",1],["F",0.5],["G",0.5],["F",0.5],["E",0.5], // wish you a mer-ry  (3✓)
+       ["D",1],["D",1],["D",1],                  // Christ-mas we      (3✓)
+       ["G",1],["G",0.5],["A",0.5],["G",0.5],["F",0.5], // wish you a mer-ry  (3✓)
+       ["E",1],["C",1],["C",1],                  // Christ-mas we      (3✓)
+       ["A",1],["A",0.5],["B",0.5],["A",0.5],["G",0.5], // wish you a mer-ry  (3✓)
+       ["F",1],["D",1],["C",1],                  // Christ-mas and     (3✓)
+       ["C",1],["D",1],["G",1],                  // a hap-py           (3✓)
+       ["E",1],["F",2]                           // New Year!          (3✓)
      ]},
 
     {title:"⛪ Oh When the Saints",
@@ -1862,7 +1683,7 @@ body.is-touch .touch-hint{ display:block; }
        ["G",4],                                   // saints           (4✓)
        ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
        ["G",2],["E",2],                           // saints go        (4✓)
-       ["C",1],["E",1],["F",2],                  // mar-ching in     (4✓)
+       ["C",1],["E",1],["D",2],                  // mar-ching in     (4✓)
        // Verso: "Oh Lord I want to be in that number"
        ["C",1],["E",1],["F",1],                  // Oh when the      (pickup)
        ["G",1],["G",1],["G",1],["A",1],          // saints go mar-   (4✓)
@@ -1951,7 +1772,7 @@ body.is-touch .touch-hint{ display:block; }
   const pauseBtn    = document.getElementById("pause");
   const stopBtn     = document.getElementById("stop");
   const getMascote  = () => document.getElementById("vb-float");
-  const mascote     = { classList: { remove:(...c)=>{ const m=getMascote(); if(m) m.classList.remove(...c); }, add:(...c)=>{ const m=getMascote(); if(m) m.classList.add(...c); } } };
+  const mascote     = { classList: { remove:(...c)=>{ const m=getMascote(); if(m) m.classList.remove(...c); if(window.vbMascotState) window.vbMascotState("remove",c); }, add:(...c)=>{ const m=getMascote(); if(m) m.classList.add(...c); if(window.vbMascotState) window.vbMascotState("add",c); } } };
   const noteCount   = document.getElementById("noteCount");
   const gameArea    = document.getElementById("gameArea");
   const scoreVal    = document.getElementById("scoreVal");
@@ -2694,15 +2515,14 @@ body.is-touch .touch-hint{ display:block; }
       const dz=dropZones[e.id];
       const dzH=dz.clientHeight;
       const startTop=-88;
-      const _bh=Math.max(32,Math.min(48,dzH/12));
-      const bh=Math.round(_bh * Math.min(e.dur, 3));
-      // endY = top of note when its BOTTOM touches the hitline (bottom of drop-zone)
-      const endY=dzH - bh;
+      const endY=dzH;
 
       if(!e.el && time>=e.spawn){
         const n=ID2[e.id];
         const b=document.createElement("div");
         b.className="noteBlock";
+        const _bh=Math.max(44,Math.min(68,dzH/9));
+        const bh=Math.round(_bh * Math.min(e.dur, 3));
         // gradiente da cor do sino com camada mais clara no topo
         const colorLight=n.color.replace('#','');
         const r=parseInt(colorLight.slice(0,2),16), g=parseInt(colorLight.slice(2,4),16), bb2=parseInt(colorLight.slice(4,6),16);
@@ -2756,10 +2576,6 @@ body.is-touch .touch-hint{ display:block; }
         if(getMode()==="listen" && !e.played && time>=e.hit){
           playBell(ID2[e.id].freq,"song");
           ringBell(bellCells[e.id]);
-          // Demo flash: light up the bell cell prominently so kids know which to press
-          const bc = bellCells[e.id];
-          bc.classList.add("demo-flash");
-          setTimeout(()=>bc.classList.remove("demo-flash"), 420);
           e.played=true;
         }
 
@@ -2769,7 +2585,7 @@ body.is-touch .touch-hint{ display:block; }
           addScore(false, e.el, bellCells[e.id], e.id, null);
         }
 
-        if(p>=1.0){ e.el.remove(); e.el=null; }
+        if(p>1.35){ e.el.remove(); e.el=null; }
       }
     }
 
@@ -2980,15 +2796,6 @@ body.is-touch .touch-hint{ display:block; }
   playBtn.onclick=play;
   pauseBtn.onclick=togglePause;
   stopBtn.onclick=()=>stop(false);
-
-  // Expose functions and refs globally so the bottom bar script (added after) can wire up
-  window._gamePlay=play;
-  window._gameTogglePause=togglePause;
-  window._gameStop=()=>stop(false);
-  window._gamePlayBtn=playBtn;
-  window._gamePauseBtn=pauseBtn;
-  window._gameStopBtn=stopBtn;
-
   playAgainBtn.onclick=()=>{ resultOverlay.classList.remove("show"); play(); };
   document.getElementById("chooseSongBtn").onclick=()=>{
     resultOverlay.classList.remove("show");
@@ -3028,28 +2835,12 @@ body.is-touch .touch-hint{ display:block; }
 
 })();
 </script>
+<div class="vb-signature">© Prof.ª Vanda Várzea</div>
 
 <!-- ROBOT FLUTUANTE -->
 <div class="robot-wrap">
   <div class="vb-bubble" id="vbBubble">Olá! 🔔</div>
-  <svg id="vb-float" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" role="button" tabindex="0" aria-label="VanBerto — clica para falar">
-    <defs>
-      <linearGradient id="vbfG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
-      <linearGradient id="vbvG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
-    </defs>
-    <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.35)"/>
-    <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbfG)"/>
-    <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
-    <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbfG)"/>
-    <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vbvG)"/>
-    <circle class="vb-eye-left" cx="33" cy="23" r="2.5" fill="#0f172a"/>
-    <circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
-    <circle cx="34.2" cy="21.5" r="1" fill="white" opacity="0.8"/><circle cx="48.2" cy="21.5" r="1" fill="white" opacity="0.8"/>
-    <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/><circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
-    <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
-    <rect id="vb-float-arm" x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
-    <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/><rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-  </svg>
+  <canvas id="vb-float" width="192" height="192" role="button" tabindex="0" aria-label="VanBerto's — clica para falar"></canvas>
 </div>
 
 <script>
@@ -3066,6 +2857,149 @@ body.is-touch .touch-hint{ display:block; }
     "Clica no sino certo! 🎯",
     "Música é diversão! 😊",
   ];
+
+  /* ═══ VanBerto's atual (mesmo desenho dos outros jogos) ═══ */
+  function rrVan(ctx,x,y,w,h,r){
+    const rr=Math.min(r,w/2,h/2);
+    ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+  }
+  function cfVan(ctx,x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}
+  
+  function drawVanBerto(ctx,blink,step,armsUp){
+    const w=96,h=96;
+    ctx.clearRect(0,0,w,h);
+    ctx.lineJoin="round"; ctx.lineCap="round";
+    ctx.save(); ctx.translate(0,6);
+    const NAVY="#16233e", NAVY2="#26365a", OUT="#101a30";
+    function white(x0,y0,x1,y1){const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,"#ffffff");g.addColorStop(0.55,"#e6edf7");g.addColorStop(1,"#b4c4dc");return g;}
+  
+    const LIFT=8, STRIDE=3;
+    let lTop=70, rTop=70, lDX=0, rDX=0;
+    if(step===0){ lTop=70-LIFT; lDX=STRIDE; rDX=-STRIDE; }
+    else if(step===1){ rTop=70-LIFT; rDX=STRIDE; lDX=-STRIDE; }
+    function leg(cx,top){
+      rrVan(ctx,cx-5,top,10,11,4.5); ctx.fillStyle=white(cx-5,top,cx+5,top); ctx.fill();
+      ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      const fy=top+9;
+      rrVan(ctx,cx-6.5,fy,13,9,4); ctx.fillStyle=NAVY; ctx.fill();
+      ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      rrVan(ctx,cx-6.5,fy+2,13,2.4,1.2); ctx.fillStyle="rgba(255,255,255,0.85)"; ctx.fill();
+      cfVan(ctx,cx-2.5,fy+4.5,1.4,"rgba(255,255,255,0.5)");
+    }
+    leg(41+lDX,lTop); leg(55+rDX,rTop);
+  
+    const ARM_SWING = 0.24;
+    const JUMP_RAISE = 2.9;
+    let lArmSwing = 0, rArmSwing = 0;
+    if(armsUp){ lArmSwing = JUMP_RAISE; rArmSwing = -JUMP_RAISE; }
+    else if(step===0){ lArmSwing=-ARM_SWING; rArmSwing=ARM_SWING; }
+    else if(step===1){ lArmSwing=ARM_SWING; rArmSwing=-ARM_SWING; }
+    function arm(sx,swing){
+      ctx.save();
+      const px=sx+4.5, py=52;
+      ctx.translate(px,py); ctx.rotate(swing); ctx.translate(-px,-py);
+      rrVan(ctx,sx,52,9,13,4.5); ctx.fillStyle=white(sx,52,sx+9,52); ctx.fill();
+      ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      const hx=sx+4.5, hy=67;
+      cfVan(ctx,hx,hy,5,NAVY);
+      ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(hx,hy,5,0,Math.PI*2); ctx.stroke();
+      cfVan(ctx,hx-2,hy+1.6,1.4,NAVY2); cfVan(ctx,hx+0.5,hy+2.4,1.4,NAVY2); cfVan(ctx,hx+2.5,hy+1.6,1.4,NAVY2);
+      ctx.restore();
+    }
+    arm(17,lArmSwing); arm(70,rArmSwing);
+  
+    rrVan(ctx,26,44,44,32,15); ctx.fillStyle=white(28,46,68,46); ctx.fill();
+    ctx.save(); rrVan(ctx,26,44,44,32,15); ctx.clip();
+    const wg=ctx.createLinearGradient(0,64,0,76); wg.addColorStop(0,"rgba(22,35,62,0)"); wg.addColorStop(0.4,"#1c2c4c"); wg.addColorStop(1,"#142038");
+    ctx.fillStyle=wg; ctx.fillRect(26,62,44,16);
+    ctx.strokeStyle="rgba(16,26,48,0.6)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(28,64); ctx.lineTo(68,64); ctx.stroke();
+    ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.ellipse(36,52,9,5.5,-0.5,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.lineWidth=3; ctx.strokeStyle=OUT; rrVan(ctx,26,44,44,32,15); ctx.stroke();
+  
+    cfVan(ctx,48,56,8,NAVY);
+    ctx.lineWidth=2.5; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(48,56,8,0,Math.PI*2); ctx.stroke();
+    const dome=ctx.createRadialGradient(45.5,53.5,1,48,56,7); dome.addColorStop(0,"#aebccf"); dome.addColorStop(0.6,"#5a6a85"); dome.addColorStop(1,"#2b3a57");
+    ctx.fillStyle=dome; ctx.beginPath(); ctx.arc(48,56,5.7,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,46,53.8,1.5,"rgba(255,255,255,0.85)");
+  
+    function pod(cx){
+      cfVan(ctx,cx,32,6,NAVY);
+      ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(cx,32,6,0,Math.PI*2); ctx.stroke();
+      cfVan(ctx,cx,32,2.8,NAVY2); cfVan(ctx,cx-0.8,31,1,"rgba(255,255,255,0.6)");
+    }
+    pod(25); pod(71);
+  
+    ctx.fillStyle=NAVY; ctx.beginPath(); ctx.moveTo(45,16); ctx.lineTo(51,16); ctx.lineTo(49.2,8); ctx.lineTo(46.8,8); ctx.closePath(); ctx.fill();
+    const halo=ctx.createRadialGradient(48,5,1,48,5,11); halo.addColorStop(0,"rgba(90,200,255,0.55)"); halo.addColorStop(1,"rgba(90,200,255,0)");
+    ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(48,5,11,0,Math.PI*2); ctx.fill();
+    const bg=ctx.createRadialGradient(46.3,3.5,0.5,48,5,5.5); bg.addColorStop(0,"#e6f7ff"); bg.addColorStop(0.4,"#48b4ff"); bg.addColorStop(1,"#1670d8");
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(48,5,5.5,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,46.2,3.4,1.6,"#ffffff");
+  
+    rrVan(ctx,26,14,44,34,17); ctx.fillStyle=white(28,15,68,15); ctx.fill();
+    ctx.lineWidth=3; ctx.strokeStyle=OUT; ctx.stroke();
+    ctx.save(); rrVan(ctx,26,14,44,34,17); ctx.clip();
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.ellipse(38,19,10,4,-0.5,0,Math.PI*2); ctx.fill(); ctx.restore();
+  
+    rrVan(ctx,30,20,36,23,12); ctx.fillStyle=NAVY; ctx.fill();
+    rrVan(ctx,32.5,22,31,19,10);
+    const vg=ctx.createLinearGradient(0,22,0,41); vg.addColorStop(0,"#7fd4ff"); vg.addColorStop(0.5,"#2a9bf0"); vg.addColorStop(1,"#1366c6");
+    ctx.fillStyle=vg; ctx.fill();
+    ctx.save(); rrVan(ctx,32.5,22,31,19,10); ctx.clip();
+    ctx.fillStyle="rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.ellipse(42,25,9,3.5,-0.4,0,Math.PI*2); ctx.fill(); ctx.restore();
+  
+    if(!blink){
+      ctx.fillStyle="#0a0f1c";
+      ctx.beginPath(); ctx.ellipse(41,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(55,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+      cfVan(ctx,42.3,28.4,1.5,"#fff"); cfVan(ctx,39.9,31,0.8,"#fff");
+      cfVan(ctx,56.3,28.4,1.5,"#fff"); cfVan(ctx,53.9,31,0.8,"#fff");
+    } else if(blink==="happy"){
+      ctx.lineWidth=3.2; ctx.strokeStyle="#0a0f1c"; ctx.lineCap="round";
+      ctx.beginPath(); ctx.arc(41,31,3.9,0.10*Math.PI,0.90*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(55,31,3.9,0.10*Math.PI,0.90*Math.PI); ctx.stroke();
+      cfVan(ctx,33.5,35.5,3,"rgba(255,120,120,0.55)");
+      cfVan(ctx,62.5,35.5,3,"rgba(255,120,120,0.55)");
+    } else {
+      ctx.lineWidth=3; ctx.strokeStyle="#0a0f1c";
+      ctx.beginPath(); ctx.arc(41,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(55,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+    }
+    ctx.fillStyle="#0a0f1c";
+    if(blink==="happy"){
+      ctx.beginPath(); ctx.ellipse(48,36,6.2,4.2,0,0,Math.PI); ctx.fill();
+      ctx.fillStyle="#ff7a7a";
+      ctx.beginPath(); ctx.ellipse(48,38,3.2,1.9,0,0,Math.PI); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.ellipse(48,36,4.6,3.2,0,0,Math.PI); ctx.fill();
+      ctx.fillStyle="#ff7a7a";
+      ctx.beginPath(); ctx.ellipse(48,37.4,2.4,1.5,0,0,Math.PI); ctx.fill();
+    }
+    ctx.restore();
+  }
+  
+  
+  const vbCv=document.getElementById('vb-float'), vbCx=vbCv.getContext('2d');
+  let vbBusy=false, vbState='', vbIv=null;
+  function vbPaint(b,st,a){ vbCx.setTransform(2,0,0,2,0,0); drawVanBerto(vbCx,b,st,a); }
+  vbPaint(false,-1,false);
+  function vbIdle(){ clearInterval(vbIv); vbIv=null; vbBusy=false; vbState=''; vbPaint(false,-1,false); }
+  window.vbMascotState=function(op,cls){
+    if(op==='remove'){ if(cls.includes(vbState)) vbIdle(); return; }
+    if(cls.includes('dancing')){
+      clearInterval(vbIv); vbBusy=true; vbState='dancing'; let i=0; vbPaint('happy',0,true);
+      vbIv=setInterval(()=>{ i++; vbPaint('happy',i%2?1:0,i%2===0); },170);
+    } else if(cls.includes('happy')){
+      clearInterval(vbIv); vbBusy=true; vbState='happy'; vbPaint('happy',-1,true);
+    } else if(cls.includes('sad')){
+      clearInterval(vbIv); vbBusy=true; vbState='sad'; vbPaint('sad',-1,false);
+    }
+  };
+  function vbBlink(){ if(vbBusy) return; vbPaint('blink',-1,false); setTimeout(()=>{ if(!vbBusy) vbPaint(false,-1,false); },170); }
+  function vbWalk(){ if(vbBusy) return; vbBusy=true; let i=0; const iv=setInterval(()=>{ vbPaint(false,i%2===0?0:1,false); i++; if(i>=6){ clearInterval(iv); vbPaint(false,-1,false); vbBusy=false; } },170); }
+  setInterval(()=>{ if(vbBusy||document.hidden) return; Math.random()<.55?vbBlink():vbWalk(); },3600);
+  vbCv.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); vbCv.click(); } });
   let bubT = null;
   function bub(msg) {
     clearTimeout(bubT);
@@ -3086,41 +3020,5 @@ body.is-touch .touch-hint{ display:block; }
   });
 })();
 </script>
-
-<!-- BOTTOM FIXED BUTTON BAR (mobile only) -->
-<div class="bottom-btn-bar" id="bottomBtnBar">
-  <button class="btn btn-play" id="play2">▶ Tocar</button>
-  <button class="btn btn-pause" id="pause2" disabled>⏸ Pausa</button>
-  <button class="btn btn-stop" id="stop2" disabled>⏹ Parar</button>
-</div>
-<script>
-(function(){
-  const play2  = document.getElementById("play2");
-  const pause2 = document.getElementById("pause2");
-  const stop2  = document.getElementById("stop2");
-  if(!play2) return;
-
-  play2.onclick  = function(){ window._gamePlay && window._gamePlay(); };
-  pause2.onclick = function(){ window._gameTogglePause && window._gameTogglePause(); };
-  stop2.onclick  = function(){ window._gameStop && window._gameStop(); };
-
-  // Sync disabled state and text from top buttons to bottom bar
-  function sync(){
-    var pb = window._gamePlayBtn, pab = window._gamePauseBtn, sb = window._gameStopBtn;
-    if(!pb) return;
-    play2.disabled  = pb.disabled;
-    pause2.disabled = pab.disabled;
-    stop2.disabled  = sb.disabled;
-    pause2.textContent = pab.textContent;
-    if(pab.classList.contains("active")) pause2.classList.add("active");
-    else pause2.classList.remove("active");
-  }
-
-  // Poll every 100ms — lightweight and works regardless of when buttons update
-  setInterval(sync, 100);
-})();
-</script>
-
-<div class="vb-signature"><span>🎵 © Professora Vanda Várzea 🎵</span></div>
 </body>
 </html>
