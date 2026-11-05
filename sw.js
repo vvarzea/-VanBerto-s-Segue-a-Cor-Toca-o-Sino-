@@ -1,5 +1,5 @@
 /* Service worker — Segue a Cor, Toca o Sino (VanBerto's). Rede primeiro para HTML/JS/CSS, cache para offline. */
-const CACHE = 'vb-sinos-v1';
+const CACHE = 'vb-sinos-v2';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
 
 self.addEventListener('install', e => {

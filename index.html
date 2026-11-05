@@ -2,13 +2,14 @@
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>🔔 Segue a Cor, Toca o Sino — VanBerto's</title>
 <meta name="theme-color" content="#1a0a2e">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sinos">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -1164,6 +1165,142 @@ body.is-touch .touch-hint{ display:block; }
 #vbNameIn{width:100%;font-family:'Fredoka One',sans-serif;font-size:20px;text-align:center;padding:10px 12px;border-radius:12px;border:3px solid #ffd700;background:#12062b;color:#fff8e0;outline:none}
 #vbNameIn:focus{box-shadow:0 0 0 3px rgba(168,85,247,.6)}
 #vbNameOk{margin-top:12px;font-family:'Fredoka One',sans-serif;font-size:18px;color:#241143;background:linear-gradient(180deg,#ffd700,#ffb700);border:0;border-radius:14px;padding:10px 26px;cursor:pointer}
+
+/* ═══════════ SMARTPHONE ═══════════
+   Layout em ecrã único: cabeçalho e controlos compactos, opções num painel (⚙),
+   zona de jogo a ocupar a altura que sobra, sinos grandes e robô fora do caminho. */
+:root{ --vh100:100vh; }
+@supports (height:100dvh){ :root{ --vh100:100dvh; } }
+.opts{ display:contents; }
+.opt-toggle{ display:none; }
+.game-area, .bell-cell{ touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+body{ -webkit-tap-highlight-color:transparent; }
+
+@media (max-width:600px), (max-height:500px) and (orientation:landscape){
+  html, body{ overscroll-behavior:none; }
+  body{ min-height:var(--vh100); -webkit-text-size-adjust:100%; }
+
+  .wrap{
+    --bell-h:clamp(66px,calc(var(--vh100)*.13),96px);
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"hd" "sc" "pg" "ct" "cb" "rp" "ga" "nn" "hi";
+    grid-template-rows:auto auto auto auto auto auto minmax(230px,1fr) auto auto;
+    min-height:calc(var(--vh100) - 20px - env(safe-area-inset-bottom,0px));
+    padding:max(4px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 2px max(6px,env(safe-area-inset-left));
+  }
+  .wrap > *{ min-width:0; }
+  .header{ grid-area:hd; margin-bottom:3px; padding:0 44px; }
+  .scoreboard{ grid-area:sc; }
+  .progress-wrap{ grid-area:pg; }
+  .controls{ grid-area:ct; }
+  .challenge-bar{ grid-area:cb; }
+  .repeat-panel{ grid-area:rp; }
+  .game-area{ grid-area:ga; }
+  .next-note-bar{ grid-area:nn; }
+  .hint{ grid-area:hi; display:none; }
+
+  /* cabeçalho */
+  .header h1{ font-size:clamp(15px,4.6vw,20px); gap:4px; }
+  .title-bell, .header p{ display:none; }
+  .title-sub{ font-size:9px; letter-spacing:1px; margin-top:0; }
+  .vb-tools{ margin-top:3px; gap:4px; flex-wrap:nowrap; overflow-x:auto; justify-content:safe center; scrollbar-width:none; }
+  .vb-tools::-webkit-scrollbar{ display:none; }
+  .vb-chip{ font-size:11px; padding:3px 9px; white-space:nowrap; flex:0 0 auto; }
+
+  /* pontuação e progresso */
+  .scoreboard{ margin-bottom:4px; gap:4px; flex-wrap:nowrap; }
+  .score-card{ flex:1; min-width:0; padding:2px 4px; border-radius:12px; }
+  .score-card .val{ font-size:clamp(14px,4.4vw,19px); }
+  .score-card .lbl{ font-size:7.5px; letter-spacing:0; white-space:nowrap; }
+  .progress-wrap{ height:4px; margin-bottom:4px; }
+  .challenge-bar, .repeat-panel{ margin-bottom:5px; }
+
+  /* controlos: só os botões ficam à vista; as opções abrem em painel */
+  .controls{
+    position:relative; z-index:20; display:flex; flex-wrap:nowrap; overflow:visible;
+    gap:6px; padding:5px 6px; margin-bottom:5px; border-radius:16px;
+  }
+  .btn-group{ flex:1 1 100%; width:100%; margin:0; gap:6px; flex-wrap:nowrap; align-items:stretch; }
+  .btn{ flex:1 1 0; min-height:44px; font-size:14px; padding:8px 6px; white-space:nowrap; }
+  .btn-play{ flex-grow:1.3; font-size:15px; }
+  .opt-toggle{
+    display:inline-flex; align-items:center; justify-content:center;
+    flex:0 0 48px; padding:0; font-size:20px;
+    background:rgba(255,255,255,.1); border:1.5px solid rgba(255,215,0,.45); color:#ffe9a8;
+  }
+  .opt-toggle[aria-expanded="true"]{ background:rgba(255,215,0,.25); }
+  .opts{
+    display:none; position:absolute; left:0; right:0; top:calc(100% + 6px); z-index:700;
+    grid-template-columns:1fr 1fr; gap:8px; padding:10px;
+    background:linear-gradient(145deg,#2a0a4e,#160830);
+    border:2px solid rgba(255,215,0,.45); border-radius:16px;
+    box-shadow:0 12px 40px rgba(0,0,0,.7);
+  }
+  .controls.open .opts{ display:grid; }
+  .opts .ctrl-group{ min-width:0; max-width:none; flex:unset; }
+  .opts .ctrl-group:first-child{ grid-column:1/-1; }
+  .opts .ctrl-group:nth-child(4){ grid-column:1/-1; order:-1; } /* Modo logo a seguir à música, em linha inteira */
+  .opts .ctrl-group:first-child{ order:-2; }
+  .opts select{ width:100%; min-height:42px; font-size:16px; } /* 16px evita o zoom automático do iOS */
+
+  /* zona de jogo: ocupa o que sobra do ecrã */
+  .game-area{ grid-template-rows:minmax(0,1fr); height:auto; min-height:0; border-radius:16px; }
+  #gameSky{ height:calc(100% - var(--bell-h)) !important; }
+  .lane-col{ min-height:0; }
+  .drop-zone{ flex:1 1 0; height:auto; min-height:0; }
+  .hitline::before{ display:none; }
+  .bell-cell{ flex:0 0 auto; min-height:var(--bell-h); padding:3px 1px 5px; }
+  .bell-svg{ width:86%; max-height:calc(var(--bell-h) - 28px); }
+  .bell-name{ font-size:clamp(10px,3vw,13px); padding:2px 3px 3px; margin-top:3px; letter-spacing:0; border-radius:6px; }
+  .bell-key-hint{ display:none; }
+  .noteBlockName{ font-size:clamp(10px,3vw,13px); }
+
+  .next-note-bar{ margin-top:4px; padding:3px 8px; gap:4px; flex-wrap:nowrap; overflow:hidden; border-radius:10px; }
+  #nextNotePips{ flex-wrap:nowrap !important; gap:4px !important; }
+  .vb-signature{ margin:0; padding:2px 0 max(4px,env(safe-area-inset-bottom)); font-size:.62rem; border-top:0; }
+
+  /* robô: pequeno, no canto de cima, sem tapar os sinos */
+  .robot-wrap{
+    top:calc(env(safe-area-inset-top,0px) + 4px); bottom:auto; right:max(4px,env(safe-area-inset-right));
+    flex-direction:column-reverse; align-items:flex-end; pointer-events:none;
+  }
+  #vb-float{ width:38px; pointer-events:auto; }
+  .vb-bubble{
+    margin:14px 0 0; min-width:0; max-width:min(170px,calc(100vw - 24px));
+    font-size:.75rem; padding:7px 10px; transform:translateY(-8px) scale(.88); transform-origin:top right;
+  }
+  .vb-bubble::after{ bottom:auto; top:-14px; left:auto; right:10px; transform:none; border-top:0; border-bottom:14px solid #ffd700; }
+  .vb-bubble::before{ bottom:auto; top:-10px; left:auto; right:12px; transform:none; border-top:0; border-bottom:11px solid #2a0a4e; }
+
+  /* avisos e janelas */
+  .feedback-toast{ top:calc(env(safe-area-inset-top,0px) + 6px); font-size:17px; padding:6px 18px; }
+  .result-overlay{ align-items:flex-start; overflow-y:auto; padding:max(12px,env(safe-area-inset-top)) 10px 12px; }
+  .result-box{ margin:auto; }
+  #vbNameOverlay{ align-items:flex-start; padding-top:max(16px,10vh); }
+}
+
+/* telemóvel na horizontal: cabeçalho e pontuação na mesma linha */
+@media (max-height:500px) and (orientation:landscape){
+  .wrap{
+    --bell-h:clamp(48px,calc(var(--vh100)*.15),64px);
+    grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);
+    grid-template-areas:"hd sc" "pg pg" "ct ct" "cb cb" "rp rp" "ga ga" "nn nn" "hi hi";
+    grid-template-rows:auto auto auto auto auto minmax(150px,1fr) auto auto;
+    min-height:calc(var(--vh100) - 18px - env(safe-area-inset-bottom,0px));
+    padding-top:max(3px,env(safe-area-inset-top));
+  }
+  .header{ padding:0; margin:0; align-self:center; }
+  .header h1{ display:none; }
+  .vb-tools{ margin:0; justify-content:flex-start; }
+  .scoreboard{ margin:0 0 3px; padding-right:46px; }
+  .controls{ margin-bottom:3px; padding:3px 6px; }
+  .btn{ min-height:38px; padding:5px 8px; font-size:13px; }
+  .opts{ grid-template-columns:repeat(3,1fr); }
+  .opts .ctrl-group:first-child, .opts .ctrl-group:nth-child(4){ grid-column:auto; order:0; }
+  .next-note-bar{ display:none; }
+}
+
 @media (min-width:1500px){ .wrap{max-width:1300px} }
 :fullscreen .wrap{max-width:1500px} :-webkit-full-screen .wrap{max-width:1500px}
 </style>
@@ -1261,6 +1398,7 @@ body.is-touch .touch-hint{ display:block; }
 
 
   <div class="controls">
+    <div class="opts" id="opts">
     <div class="ctrl-group">
       <label>🎵 Música</label>
       <select id="song"></select>
@@ -1305,10 +1443,12 @@ body.is-touch .touch-hint{ display:block; }
         <option value="0.32">🔊 Alto</option>
       </select>
     </div>
+    </div>
     <div class="btn-group">
       <button class="btn btn-play" id="play">▶ Tocar</button>
       <button class="btn btn-pause" id="pause" disabled>⏸ Pausa</button>
       <button class="btn btn-stop" id="stop" disabled>⏹ Parar</button>
+      <button type="button" class="btn opt-toggle" id="optToggle" aria-expanded="false" aria-controls="opts" aria-label="Opções">⚙</button>
     </div>
   </div>
 
@@ -3146,6 +3286,18 @@ body.is-touch .touch-hint{ display:block; }
   inst.addEventListener('click',function(){ if(!deferred) return; deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; inst.hidden=true; }); });
   window.addEventListener('appinstalled',function(){ inst.hidden=true; });
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+})();
+</script>
+
+<script>
+/* painel de opções (⚙) — só aparece em ecrãs pequenos */
+(function(){
+  var c=document.querySelector('.controls'), b=document.getElementById('optToggle'), play=document.getElementById('play');
+  if(!c||!b) return;
+  function set(o){ c.classList.toggle('open',o); b.setAttribute('aria-expanded',o?'true':'false'); b.textContent=o?'✕':'⚙'; }
+  b.addEventListener('click',function(){ set(!c.classList.contains('open')); });
+  if(play) play.addEventListener('click',function(){ set(false); });
+  document.addEventListener('pointerdown',function(e){ if(c.classList.contains('open')&&!c.contains(e.target)) set(false); });
 })();
 </script>
 </body>
